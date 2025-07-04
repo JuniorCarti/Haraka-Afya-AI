@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import SplashScreen from './SplashScreen';
 import OnboardingScreen from './OnboardingScreen';
@@ -14,6 +13,9 @@ import PaymentScreen from './payment/PaymentScreen';
 import SubscriptionPlansScreen from './payment/SubscriptionPlansScreen';
 import SidebarMenu from './main/SidebarMenu';
 import BottomNavigation from './main/BottomNavigation';
+import EmergencyServices from './emergency/EmergencyServices';
+import WhatsAppChat from './chat/WhatsAppChat';
+import WhatsAppFloat from './chat/WhatsAppFloat';
 
 type AppScreen = 
   | 'splash' 
@@ -44,6 +46,8 @@ const HarakaAfyaApp: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+  const [showEmergencyServices, setShowEmergencyServices] = useState(false);
+  const [showWhatsAppChat, setShowWhatsAppChat] = useState(false);
 
   // Simulate app initialization
   useEffect(() => {
@@ -132,6 +136,9 @@ const HarakaAfyaApp: React.FC = () => {
         break;
       case 'sidebar':
         setIsSidebarOpen(true);
+        break;
+      case 'emergency':
+        setShowEmergencyServices(true);
         break;
       case 'logout':
         handleLogout();
@@ -257,6 +264,8 @@ const HarakaAfyaApp: React.FC = () => {
     'home', 'learn', 'symptoms', 'hospitals', 'profile'
   ].includes(currentScreen);
 
+  const shouldShowWhatsAppFloat = isAuthenticated;
+
   return (
     <div className="relative min-h-screen bg-white">
       {renderCurrentScreen()}
@@ -268,6 +277,10 @@ const HarakaAfyaApp: React.FC = () => {
         />
       )}
       
+      {shouldShowWhatsAppFloat && (
+        <WhatsAppFloat onClick={() => setShowWhatsAppChat(true)} />
+      )}
+      
       {isAuthenticated && (
         <SidebarMenu
           isOpen={isSidebarOpen}
@@ -275,6 +288,17 @@ const HarakaAfyaApp: React.FC = () => {
           onNavigate={handleNavigation}
           userName={user?.firstName || 'User'}
           userEmail={user?.email || ''}
+        />
+      )}
+
+      {showEmergencyServices && (
+        <EmergencyServices onClose={() => setShowEmergencyServices(false)} />
+      )}
+
+      {showWhatsAppChat && (
+        <WhatsAppChat 
+          isOpen={showWhatsAppChat} 
+          onClose={() => setShowWhatsAppChat(false)} 
         />
       )}
     </div>

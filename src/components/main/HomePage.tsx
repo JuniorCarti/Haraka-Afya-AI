@@ -38,9 +38,9 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/3 to-gold/3 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 pb-20">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">
+      <div className="bg-white/90 backdrop-blur-md border-b border-green-100 sticky top-0 z-30">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={() => onNavigate('sidebar')}>
@@ -50,7 +50,7 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
               <Button variant="ghost" size="sm" onClick={() => onNavigate('notifications')}>
                 <Bell className="w-6 h-6" />
               </Button>
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold">{userName.charAt(0)}</span>
               </div>
             </div>
@@ -62,7 +62,7 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
         {/* Welcome Section */}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {greeting}, {userName}! 👋
+            {greeting}, {userName}! 🌿
           </h1>
           <p className="text-gray-600">How can I help you stay healthy today?</p>
         </div>
@@ -72,7 +72,7 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold mb-1">Emergency Services</h3>
-              <p className="text-sm opacity-90">24/7 immediate assistance</p>
+              <p className="text-sm opacity-90">Multiple hospitals • Real-time ambulance tracking</p>
             </div>
             <Button
               variant="secondary"
@@ -81,37 +81,37 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
               onClick={() => onNavigate('emergency')}
             >
               <Phone className="w-4 h-4 mr-2" />
-              Call 911
+              Emergency
             </Button>
           </div>
         </div>
 
         {/* Voice Input Section */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-green-100">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Hujambo! Tell me your symptoms
           </h2>
           <div className="flex space-x-3">
             <Button
               variant={isVoiceActive ? "default" : "outline"}
-              className={`flex-1 py-4 ${isVoiceActive ? 'animate-pulse' : ''}`}
+              className={`flex-1 py-4 ${isVoiceActive ? 'animate-pulse bg-green-600' : 'border-green-300 hover:bg-green-50'}`}
               onClick={handleVoiceInput}
             >
               <Mic className="w-5 h-5 mr-2" />
               {isVoiceActive ? 'Listening...' : 'Speak'}
             </Button>
-            <Button variant="outline" className="flex-1 py-4" onClick={() => onNavigate('symptoms')}>
+            <Button variant="outline" className="flex-1 py-4 border-green-300 hover:bg-green-50" onClick={() => onNavigate('symptoms')}>
               <Type className="w-5 h-5 mr-2" />
               Type
             </Button>
           </div>
           <p className="text-sm text-gray-500 mt-3 text-center">
-            Available in Swahili, English & Sheng
+            Available in Swahili, English, Sheng, Luo, Kikuyu & Luhya
           </p>
         </div>
 
         {/* Health Stats */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-green-100">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Health Overview</h2>
             <Button variant="ghost" size="sm" onClick={() => onNavigate('profile')}>
@@ -144,12 +144,12 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
                 <button
                   key={action.id}
                   onClick={() => onNavigate(action.id)}
-                  className={`bg-white rounded-2xl p-4 shadow-sm text-left hover:shadow-md transition-all duration-200 ${
-                    action.urgent ? 'ring-2 ring-red-200' : ''
+                  className={`bg-white rounded-2xl p-4 shadow-sm text-left hover:shadow-md transition-all duration-200 border ${
+                    action.urgent ? 'ring-2 ring-red-200 border-red-200' : 'border-green-100 hover:border-green-200'
                   }`}
                 >
-                  <div className={`w-12 h-12 ${action.urgent ? 'bg-red-100' : 'bg-primary/10'} rounded-xl flex items-center justify-center mb-3`}>
-                    <IconComponent className={`w-6 h-6 ${action.urgent ? 'text-red-600' : 'text-primary'}`} />
+                  <div className={`w-12 h-12 ${action.urgent ? 'bg-red-100' : 'bg-green-100'} rounded-xl flex items-center justify-center mb-3`}>
+                    <IconComponent className={`w-6 h-6 ${action.urgent ? 'text-red-600' : 'text-green-600'}`} />
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-1">{action.label}</h3>
                   <p className="text-sm text-gray-500">{action.description}</p>
@@ -160,13 +160,13 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
         </div>
 
         {/* Today's Health Tips */}
-        <div className="bg-gradient-to-r from-primary/10 to-gold/10 rounded-2xl p-6">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Today's Health Tips</h2>
           <div className="space-y-3">
             {todaysTips.map((tip, index) => (
               <div key={index} className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center mt-0.5">
-                  <span className="text-xs font-bold text-primary">{index + 1}</span>
+                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-bold text-green-600">{index + 1}</span>
                 </div>
                 <p className="text-gray-700 text-sm flex-1">{tip}</p>
               </div>
@@ -174,7 +174,7 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
           </div>
           <Button 
             variant="outline" 
-            className="w-full mt-4"
+            className="w-full mt-4 border-green-300 hover:bg-green-50"
             onClick={() => onNavigate('learn')}
           >
             View More Tips
@@ -182,18 +182,18 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
         </div>
 
         {/* Medication Reminder */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-green-100">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Medication Reminder</h2>
-            <Pill className="w-6 h-6 text-primary" />
+            <Pill className="w-6 h-6 text-green-600" />
           </div>
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium text-gray-900">Vitamin D</h3>
-                <p className="text-sm text-gray-600">Take with breakfast</p>
+                <p className="text-sm text-gray-600">Take with breakfast • 9:00 AM</p>
               </div>
-              <Button size="sm" onClick={() => onNavigate('profile')}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => onNavigate('profile')}>
                 Mark Taken
               </Button>
             </div>
@@ -201,13 +201,13 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
         </div>
 
         {/* Upgrade Banner */}
-        <div className="bg-gradient-to-r from-gold/20 to-primary/20 rounded-2xl p-6">
+        <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-6 border border-green-200">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">Upgrade to Premium</h3>
-              <p className="text-sm text-gray-600">Unlimited AI consultations & more</p>
+              <p className="text-sm text-gray-600">Unlimited AI consultations & more features</p>
             </div>
-            <Button onClick={() => onNavigate('subscription')}>
+            <Button onClick={() => onNavigate('subscription')} className="bg-green-600 hover:bg-green-700">
               Upgrade
             </Button>
           </div>
