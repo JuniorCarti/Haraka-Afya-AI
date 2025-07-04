@@ -1,73 +1,103 @@
-# Welcome to your Lovable project
+# 🩺 Haraka-Afya AI – Your Emergency Health Companion
 
-## Project info
+> “Built with heart, voice, and AI – because healthcare shouldn't wait.”
 
-**URL**: https://lovable.dev/projects/0472d733-ec3e-4d5a-8f7e-d67b51359630
+![Haraka-Afya Logo](./public/logo.png)
 
-## How can I edit this code?
+## 🚀 About the Project
 
-There are several ways of editing your application.
+**Haraka-Afya AI** is an AI-powered civic health companion built for underserved Kenyan communities. It offers emergency first aid guidance, SHA health education, and hospital directions — in **Swahili**, **Sheng**, and **offline mode** via **WhatsApp or SMS**.
 
-**Use Lovable**
+⏱️ Built in under 48 hours  
+🧠 Powered by AI (Claude + Cursor)  
+📱 Runs on Vite + React + ShadCN + Supabase  
+🗺️ Map + SMS integrations included  
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0472d733-ec3e-4d5a-8f7e-d67b51359630) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🎯 Key Features
 
-**Use your preferred IDE**
+| Feature                      | Description                                                                 |
+|-----------------------------|-----------------------------------------------------------------------------|
+| 🔊 **Voice + Swahili Input**  | Speak symptoms in Sheng or Swahili and get advice                          |
+| 🧠 **AI First Aid Assistant** | Real-time help for bleeding, asthma, seizures, etc.                        |
+| 🏥 **SHA Info & Clinics**     | Educates on SHA rights + shows nearby verified clinics                    |
+| 📶 **Offline Mode (SMS)**     | Get help even without internet (via Africa's Talking SMS)                 |
+| 🧾 **Health Logs**            | View & export symptom history (premium)                                   |
+| 💡 **Daily Tips via WhatsApp**| 5-minute civic health learning content (SHA, hygiene, nutrition)          |
+| 💬 **WhatsApp Bot**           | Chat interface for users without the app                                  |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🧩 Tech Stack
 
-Follow these steps:
+- ⚡️ **Frontend:** Vite + React + TypeScript + TailwindCSS + ShadCN
+- 🧠 **AI:** Claude (Anthropic) + Cursor AI for automation
+- ☁️ **Backend:** Supabase (DB + Auth + Realtime)
+- 📍 **Maps:** Mapbox API
+- 📲 **Bot Integration:** Twilio WhatsApp API
+- 📤 **Offline SMS:** Africa’s Talking SMS Gateway
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## ⚙️ Getting Started
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+git clone https://github.com/JuniorCarti/haraka-afya-connect
+cd haraka-afya-connect
+bun install
+bun dev
+````
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+> ⚠️ Ensure you have a `.env` file with Supabase + API keys.
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🖼️ Demo
 
-**Use GitHub Codespaces**
+Live site: [🔗 https://haraka-afya-connect.lovable.app/
+Video: [YouTube Demo Pitch](#)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🧪 How It Works
 
-This project is built with:
+1. User speaks or types symptom in Swahili
+2. Claude AI processes and returns step-by-step help
+3. If offline, fallback logic sends SMS response
+4. WhatsApp chatbot accessible for daily tips or SHA learning
+5. Nearby SHA clinics displayed using Mapbox
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 💰 Monetization Plan
 
-Simply open [Lovable](https://lovable.dev/projects/0472d733-ec3e-4d5a-8f7e-d67b51359630) and click on Share -> Publish.
+| Model             | Description                      |
+| ----------------- | -------------------------------- |
+| 🆓 Freemium       | Voice help, tips, clinics = free |
+| 💳 Premium Logs   | Health logs, export = KES 50     |
+| 🧑🏽‍⚕️ NGO Plans | County/NGO licensing for bulk    |
+| 🧩 Upsells        | First-aid kits, SHA certificate  |
 
-## Can I connect a custom domain to my Lovable project?
+---
+## 👨🏽‍💻 Team
 
-Yes, you can!
+* **Ridge Junior** – Founder, Dev, AI prompt engineering, UI/UX
+* **lovable-dev\[bot]** – Automation + scaffolding
+* **Claude AI** – Symptom intelligence
+* **Cursor AI** – Fast prototyping logic
+  
+## 📁 Submission
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+* [✅ GitHub Repository](https://github.com/JuniorCarti/haraka-afya-connect)
+* [🎯 Pitch Deck (Canva)](https://www.canva.com/design/DAGsIkmUSNM/sEgk3ZXUGGPbjFV9lXfcLw/edit?utm_content=DAGsIkmUSNM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [📌 Padlet Voting Page](https://padlet.com/kamausuzan711/vote-for-you-best-vibe-coding-project-g4h77eaov8awtolt/wish/O7A9Qm2Kz77NZ6x3)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## 🫱🏽‍🫲🏽 Join the Movement
+
+> Haraka-Afya isn’t just an app.
+> It’s a **lifesaving voice** in a community where time, language, and access can mean life or death.
+
+**💻 Code with Purpose. Pitch with Power. Vibe with Impact.**
