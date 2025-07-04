@@ -7,6 +7,8 @@
 
 ### 🏠 Onboarding  Screen  
 ![Home](./public/Screenshot_2025-07-04-06-46-10-84_40deb401b9ffe8e1df2f1cc5ba480b12.jpg)
+
+
 "Your AI-powered health companion - bringing medical expertise to your fingertips in Swahili, English, and local dialects."
 
 ## 🌟 Key Features
