@@ -1,7 +1,9 @@
 
 # 🩺 Haraka-Afya AI - Revolutionizing Healthcare Access in Kenya
 
-![App Screenshot](https://via.placeholder.com/800x400/00B4A6/FFFFFF?text=Haraka-Afya+AI+Screenshot)
+![![Screenshot_2025-07-04-06-46-10-84_40deb401b9ffe8e1df2f1cc5ba480b12](https://github.com/user-attachments/assets/b92412f1-d669-4524-843e-1ebf72afc85c)
+](![Screenshot_2025-07-04-06-46-10-84_40deb401b9ffe8e1df2f1cc5ba480b12](https://github.com/user-attachments/assets/0a17f769-5269-454b-b4e8-14d48f61dc3e)
+)
 
 "Your AI-powered health companion - bringing medical expertise to your fingertips in Swahili, English, and local dialects."
 
