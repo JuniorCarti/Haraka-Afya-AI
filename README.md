@@ -70,14 +70,15 @@ Video: [YouTube Demo Pitch](#)
 
 ---
 
-## 💰 Monetization Plan
+## 💳 Pricing Plans
 
-| Model             | Description                      |
-| ----------------- | -------------------------------- |
-| 🆓 Freemium       | Voice help, tips, clinics = free |
-| 💳 Premium Logs   | Health logs, export = KES 50     |
-| 🧑🏽‍⚕️ NGO Plans | County/NGO licensing for bulk    |
-| 🧩 Upsells        | First-aid kits, SHA certificate  |
+| Plan       | Price             | Features                                                                 |
+|------------|-------------------|--------------------------------------------------------------------------|
+| 🟢 Free     | KSh 0/month       | 5 AI consultations, symptom checker, health tips, hospital finder       |
+| 🔵 Premium  | KSh 2,500/month   | Unlimited AI, insights, medication reminders, export logs, telehealth   |
+| 🟡 Family   | KSh 4,000/month   | All Premium features + 6 users, shared dashboard, emergency contacts    |
+
+> 💡 **Why Premium?** Track your health, get proactive insights, and access expert care — for yourself or your family.
 
 ---
 ## 👨🏽‍💻 Team
