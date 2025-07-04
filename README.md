@@ -2,8 +2,6 @@
 
 > “Built with heart, voice, and AI – because healthcare shouldn't wait.”
 
-![Haraka-Afya Logo](./public/logo.png)
-
 ## 🚀 About the Project
 
 **Haraka-Afya AI** is an AI-powered civic health companion built for underserved Kenyan communities. It offers emergency first aid guidance, SHA health education, and hospital directions — in **Swahili**, **Sheng**, and **offline mode** via **WhatsApp or SMS**.
