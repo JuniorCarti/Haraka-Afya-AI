@@ -1,102 +1,84 @@
-# 🩺 Haraka-Afya AI – Your Emergency Health Companion
 
-> “Built with heart, voice, and AI – because healthcare shouldn't wait.”
+# 🩺 Haraka-Afya AI - Revolutionizing Healthcare Access in Kenya
 
-## 🚀 About the Project
+![App Screenshot](https://via.placeholder.com/800x400/00B4A6/FFFFFF?text=Haraka-Afya+AI+Screenshot)
 
-**Haraka-Afya AI** is an AI-powered civic health companion built for underserved Kenyan communities. It offers emergency first aid guidance, SHA health education, and hospital directions — in **Swahili**, **Sheng**, and **offline mode** via **WhatsApp or SMS**.
+"Your AI-powered health companion - bringing medical expertise to your fingertips in Swahili, English, and local dialects."
 
-⏱️ Built in under 48 hours  
-🧠 Powered by AI (Claude + Cursor)  
-📱 Runs on Vite + React + ShadCN + Supabase  
-🗺️ Map + SMS integrations included  
+## 🌟 Key Features
 
----
+### 🚨 Emergency Health Assistance
+- **Multi-language Symptom Checker** (English, Swahili, Sheng, Luo, Kikuyu, Luhya)
+- **Real-time Ambulance Tracking** - See available ambulances and estimated wait times
+- **Hospital Emergency Contacts** - Direct access to facility-specific emergency numbers
 
-## 🎯 Key Features
+### 💊 Comprehensive Health Management
+- **AI-Powered Diagnosis** for chronic conditions (Cancer, Diabetes, Asthma, Arthritis)
+- **Medication Reminders** with calendar integration and completion tracking
+- **500+ Term Medical Dictionary** with detailed explanations
 
-| Feature                      | Description                                                                 |
-|-----------------------------|-----------------------------------------------------------------------------|
-| 🔊 **Voice + Swahili Input**  | Speak symptoms in Sheng or Swahili and get advice                          |
-| 🧠 **AI First Aid Assistant** | Real-time help for bleeding, asthma, seizures, etc.                        |
-| 🏥 **SHA Info & Clinics**     | Educates on SHA rights + shows nearby verified clinics                    |
-| 📶 **Offline Mode (SMS)**     | Get help even without internet (via Africa's Talking SMS)                 |
-| 🧾 **Health Logs**            | View & export symptom history (premium)                                   |
-| 💡 **Daily Tips via WhatsApp**| 5-minute civic health learning content (SHA, hygiene, nutrition)          |
-| 💬 **WhatsApp Bot**           | Chat interface for users without the app                                  |
+### 🤝 Community Support
+- **Health Discussion Forums** with survivor stories and expert talks
+- **Scheduled Zoom Meetings** for prayer sessions and doctor consultations
+- **WhatsApp AI Chatbot** with seamless transition to human support
 
----
+### 🏥 Healthcare Access
+- **Public & Private Facility Locator** (hospitals, clinics, pharmacies)
+- **Verified Provider Database** with user reviews and specialties
+- **Telehealth Integration** for remote consultations
 
-## 🧩 Tech Stack
+## 🛠️ Technology Stack
 
-- ⚡️ **Frontend:** Vite + React + TypeScript + TailwindCSS + ShadCN
-- 🧠 **AI:** Claude (Anthropic) + Cursor AI for automation
-- ☁️ **Backend:** Supabase (DB + Auth + Realtime)
-- 📍 **Maps:** Mapbox API
-- 📲 **Bot Integration:** Twilio WhatsApp API
-- 📤 **Offline SMS:** Africa’s Talking SMS Gateway
+**Frontend:**
+- React Native (iOS/Android)
+- Tailwind CSS for styling
+- Voice recognition APIs
 
----
+**Backend:**
+- Supabase for authentication and database
+- AI models for symptom analysis
+- Africa's Talking SMS gateway
 
-## ⚙️ Getting Started
+**Integrations:**
+- WhatsApp Business API
+- M-Pesa/Airtel Money payment processing
+- Mapbox for facility locations
 
+## 📲 Getting Started
+
+### Prerequisites
+- Node.js 16+
+- Expo CLI (for mobile development)
+- Supabase account
+
+### Installation
 ```bash
-git clone https://github.com/JuniorCarti/haraka-afya-connect
-cd haraka-afya-connect
-bun install
-bun dev
-````
+git clone https://github.com/juniorcarti/haraka-afya-ai.git
+cd haraka-afya-ai
+npm install
+expo start
+```
 
-> ⚠️ Ensure you have a `.env` file with Supabase + API keys.
+## 🌈 Color Scheme
+- Primary: `#00B4A6` (Teal - Health & Trust)
+- Secondary: `#4CAF50` (Green - Life & Growth)
+- Accent: `#FFD700` (Gold - Premium Features)
 
----
+## 📅 Roadmap
+- [x] Multi-language voice recognition
+- [x] Emergency services integration
+- [x] Medication tracking system
+- [ ] Biometric authentication
+- [ ] Expanded tribal language support
+- [ ] Offline mode functionality
 
-## 🖼️ Demo
+## 📞 Contact
+For support or partnership opportunities:
+- Email: support@harakahealthafya.org
+- WhatsApp: +254 113 245 740
+- Website: www.harakahealthafya.org
 
-Live site: [🔗 https://haraka-afya-connect.lovable.app/
-Video: [YouTube Demo Pitch](#)
+## 📜 License
+This project is licensed under the MIT License.
 
----
-
-## 🧪 How It Works
-
-1. User speaks or types symptom in Swahili
-2. Claude AI processes and returns step-by-step help
-3. If offline, fallback logic sends SMS response
-4. WhatsApp chatbot accessible for daily tips or SHA learning
-5. Nearby SHA clinics displayed using Mapbox
-
----
-
-## 💳 Pricing Plans
-
-| Plan       | Price             | Features                                                                 |
-|------------|-------------------|--------------------------------------------------------------------------|
-| 🟢 Free     | KSh 0/month       | 5 AI consultations, symptom checker, health tips, hospital finder       |
-| 🔵 Premium  | KSh 2,500/month   | Unlimited AI, insights, medication reminders, export logs, telehealth   |
-| 🟡 Family   | KSh 4,000/month   | All Premium features + 6 users, shared dashboard, emergency contacts    |
-
-> 💡 **Why Premium?** Track your health, get proactive insights, and access expert care — for yourself or your family.
-
----
-## 👨🏽‍💻 Team
-
-* **Ridge Junior** – Founder, Dev, AI prompt engineering, UI/UX
-* **lovable-dev\[bot]** – Automation + scaffolding
-* **Claude AI** – Symptom intelligence
-* **Cursor AI** – Fast prototyping logic
-  
-## 📁 Submission
-
-* [✅ GitHub Repository](https://github.com/JuniorCarti/haraka-afya-connect)
-* [🎯 Pitch Deck (Canva)](https://www.canva.com/design/DAGsIkmUSNM/sEgk3ZXUGGPbjFV9lXfcLw/edit?utm_content=DAGsIkmUSNM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
-* [📌 Padlet Voting Page](https://padlet.com/kamausuzan711/vote-for-you-best-vibe-coding-project-g4h77eaov8awtolt/wish/O7A9Qm2Kz77NZ6x3)
-
----
-
-## Join the Movement
-
-> Haraka-Afya isn’t just an app.
-> It’s a **lifesaving voice** in a community where time, language, and access can mean life or death.
-
-**💻 Code with Purpose. Pitch with Power. Vibe with Impact.**
+"Built with heart, voice, and AI – because healthcare shouldn't wait."
