@@ -96,7 +96,7 @@ Video: [YouTube Demo Pitch](#)
 
 ---
 
-## 🫱🏽‍🫲🏽 Join the Movement
+## Join the Movement
 
 > Haraka-Afya isn’t just an app.
 > It’s a **lifesaving voice** in a community where time, language, and access can mean life or death.
