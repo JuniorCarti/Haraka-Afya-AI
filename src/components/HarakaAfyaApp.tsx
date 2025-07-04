@@ -16,6 +16,9 @@ import BottomNavigation from './main/BottomNavigation';
 import EmergencyServices from './emergency/EmergencyServices';
 import WhatsAppChat from './chat/WhatsAppChat';
 import WhatsAppFloat from './chat/WhatsAppFloat';
+import MedicalDictionary from './medical/MedicalDictionary';
+import MedicationReminders from './medication/MedicationReminders';
+import HealthCommunity from './community/HealthCommunity';
 
 type AppScreen = 
   | 'splash' 
@@ -30,7 +33,10 @@ type AppScreen =
   | 'profile'
   | 'payment'
   | 'subscription'
-  | 'sidebar';
+  | 'sidebar'
+  | 'medical-dictionary'
+  | 'medication-reminders'
+  | 'health-community';
 
 interface User {
   id: string;
@@ -125,6 +131,9 @@ const HarakaAfyaApp: React.FC = () => {
       case 'symptoms':
       case 'hospitals':
       case 'profile':
+      case 'medical-dictionary':
+      case 'medication-reminders':
+      case 'health-community':
         setCurrentScreen(screen as AppScreen);
         setActiveTab(screen);
         break;
@@ -243,6 +252,15 @@ const HarakaAfyaApp: React.FC = () => {
             onNavigate={handleNavigation}
           />
         );
+
+      case 'medical-dictionary':
+        return <MedicalDictionary onBack={handleBackToHome} />;
+
+      case 'medication-reminders':
+        return <MedicationReminders onBack={handleBackToHome} />;
+
+      case 'health-community':
+        return <HealthCommunity onBack={handleBackToHome} />;
       
       case 'payment':
         return <PaymentScreen onBack={handleBackToHome} />;

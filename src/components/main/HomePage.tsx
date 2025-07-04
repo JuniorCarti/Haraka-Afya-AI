@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Menu, Bell, MapPin, Mic, Type, Phone, Heart, Activity, Thermometer, Pill, Calendar, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -159,6 +158,51 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
           </div>
         </div>
 
+        {/* New Features Section */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Health Tools</h2>
+          <div className="grid grid-cols-1 gap-3">
+            <button
+              onClick={() => onNavigate('medical-dictionary')}
+              className="bg-white rounded-2xl p-4 shadow-sm text-left hover:shadow-md transition-all duration-200 border border-green-100 hover:border-green-200 flex items-center space-x-4"
+            >
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">📚</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Medical Dictionary</h3>
+                <p className="text-sm text-gray-500">500+ medical terms explained</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onNavigate('medication-reminders')}
+              className="bg-white rounded-2xl p-4 shadow-sm text-left hover:shadow-md transition-all duration-200 border border-green-100 hover:border-green-200 flex items-center space-x-4"
+            >
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <Pill className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Medication Reminders</h3>
+                <p className="text-sm text-gray-500">Track your medications & get notifications</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onNavigate('health-community')}
+              className="bg-white rounded-2xl p-4 shadow-sm text-left hover:shadow-md transition-all duration-200 border border-green-100 hover:border-green-200 flex items-center space-x-4"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">🤝</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Health Community</h3>
+                <p className="text-sm text-gray-500">Connect with others, share stories & join events</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* Today's Health Tips */}
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Today's Health Tips</h2>
@@ -193,7 +237,7 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
                 <h3 className="font-medium text-gray-900">Vitamin D</h3>
                 <p className="text-sm text-gray-600">Take with breakfast • 9:00 AM</p>
               </div>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => onNavigate('profile')}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => onNavigate('medication-reminders')}>
                 Mark Taken
               </Button>
             </div>
