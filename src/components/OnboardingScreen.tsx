@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronRight, Skip, Heart, Zap, Shield } from 'lucide-react';
+import { ChevronRight, SkipForward, Heart, Zap, Shield } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface OnboardingScreenProps {
@@ -58,7 +58,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
       {/* Skip Button */}
       <div className="flex justify-end p-6">
         <Button variant="ghost" onClick={onSkip} className="text-gray-600">
-          <Skip className="w-4 h-4 mr-2" />
+          <SkipForward className="w-4 h-4 mr-2" />
           Skip
         </Button>
       </div>
