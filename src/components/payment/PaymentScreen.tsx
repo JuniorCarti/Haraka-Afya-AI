@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { ArrowLeft, CreditCard, Smartphone, Phone, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface PaymentScreenProps {
@@ -20,10 +19,30 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
   });
 
   const paymentMethods = [
-    { id: 'visa', name: 'Visa Card', icon: CreditCard, color: 'bg-blue-600' },
-    { id: 'mpesa', name: 'M-Pesa', icon: Smartphone, color: 'bg-green-600' },
-    { id: 'airtel', name: 'Airtel Money', icon: Phone, color: 'bg-red-600' },
-    { id: 'stripe', name: 'Stripe Payment', icon: CreditCard, color: 'bg-purple-600' }
+    { 
+      id: 'visa', 
+      name: 'Visa Card', 
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png',
+      color: 'bg-blue-600' 
+    },
+    { 
+      id: 'mpesa', 
+      name: 'M-Pesa', 
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/1/15/M-PESA_LOGO-01.svg',
+      color: 'bg-green-600' 
+    },
+    { 
+      id: 'airtel', 
+      name: 'Airtel Money', 
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Airtel_logo_logotype_emblem.png/200px-Airtel_logo_logotype_emblem.png',
+      color: 'bg-red-600' 
+    },
+    { 
+      id: 'stripe', 
+      name: 'Stripe Payment', 
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg',
+      color: 'bg-purple-600' 
+    }
   ];
 
   const handlePaymentSelect = (methodId: string) => {
@@ -193,29 +212,37 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
             </div>
 
             <div className="space-y-3">
-              {paymentMethods.map((method) => {
-                const IconComponent = method.icon;
-                return (
-                  <button
-                    key={method.id}
-                    onClick={() => handlePaymentSelect(method.id)}
-                    className="w-full bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all duration-200 flex items-center space-x-4"
-                  >
-                    <div className={`w-12 h-12 ${method.color} rounded-xl flex items-center justify-center`}>
-                      <IconComponent className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <h3 className="font-semibold text-gray-900">{method.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        {method.id === 'mpesa' && 'Pay with M-Pesa'}
-                        {method.id === 'airtel' && 'Pay with Airtel Money'}
-                        {method.id === 'visa' && 'Pay with Visa Card'}
-                        {method.id === 'stripe' && 'Pay with Stripe'}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+              {paymentMethods.map((method) => (
+                <button
+                  key={method.id}
+                  onClick={() => handlePaymentSelect(method.id)}
+                  className="w-full bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all duration-200 flex items-center space-x-4"
+                >
+                  <div className="w-16 h-12 bg-white rounded-xl flex items-center justify-center border border-gray-100">
+                    <img 
+                      src={method.logo} 
+                      alt={method.name}
+                      className="max-w-12 max-h-8 object-contain"
+                      onError={(e) => {
+                        // Fallback to text if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.nextElementSibling!.textContent = method.name.charAt(0);
+                      }}
+                    />
+                    <span className="hidden text-xs font-bold text-gray-600"></span>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <h3 className="font-semibold text-gray-900">{method.name}</h3>
+                    <p className="text-sm text-gray-500">
+                      {method.id === 'mpesa' && 'Pay with M-Pesa'}
+                      {method.id === 'airtel' && 'Pay with Airtel Money'}
+                      {method.id === 'visa' && 'Pay with Visa Card'}
+                      {method.id === 'stripe' && 'Pay with Stripe'}
+                    </p>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         ) : (

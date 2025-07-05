@@ -3,12 +3,17 @@ import React, { useState } from 'react';
 import { ArrowLeft, Shield, Lock, Eye, Fingerprint, Smartphone, Mail, Bell, Settings } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
+import PrivacyPolicy from './PrivacyPolicy';
+import TermsOfService from './TermsOfService';
+import DataProtectionNotice from './DataProtectionNotice';
+import CookiePolicy from './CookiePolicy';
 
 interface PrivacyScreenProps {
   onBack: () => void;
 }
 
 const PrivacyScreen: React.FC<PrivacyScreenProps> = ({ onBack }) => {
+  const [currentView, setCurrentView] = useState<'main' | 'privacy-policy' | 'terms' | 'data-protection' | 'cookies'>('main');
   const [settings, setSettings] = useState({
     twoFactor: false,
     biometric: false,
@@ -32,6 +37,22 @@ const PrivacyScreen: React.FC<PrivacyScreenProps> = ({ onBack }) => {
   const handleTwoFactorSetup = () => {
     alert('Two-factor authentication setup:\n\n1. Enter your phone number\n2. Verify with SMS code\n3. Setup backup codes\n\nThis feature will be fully implemented with backend integration.');
   };
+
+  if (currentView === 'privacy-policy') {
+    return <PrivacyPolicy onBack={() => setCurrentView('main')} />;
+  }
+
+  if (currentView === 'terms') {
+    return <TermsOfService onBack={() => setCurrentView('main')} />;
+  }
+
+  if (currentView === 'data-protection') {
+    return <DataProtectionNotice onBack={() => setCurrentView('main')} />;
+  }
+
+  if (currentView === 'cookies') {
+    return <CookiePolicy onBack={() => setCurrentView('main')} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/3 to-gold/3">
@@ -200,16 +221,32 @@ const PrivacyScreen: React.FC<PrivacyScreenProps> = ({ onBack }) => {
         <div className="bg-white rounded-2xl p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Legal</h2>
           <div className="space-y-3">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => setCurrentView('privacy-policy')}
+            >
               Privacy Policy
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => setCurrentView('terms')}
+            >
               Terms of Service
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => setCurrentView('data-protection')}
+            >
               Data Protection Notice
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => setCurrentView('cookies')}
+            >
               Cookie Policy
             </Button>
           </div>
