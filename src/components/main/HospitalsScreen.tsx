@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, MapPin, Phone, Star, Clock, Users, Stethoscope, Search, Filter } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -151,7 +152,6 @@ const HospitalsScreen: React.FC<HospitalsScreenProps> = ({ onNavigate }) => {
   if (selectedFacility) {
     return (
       <FacilityChecker 
-        facility={selectedFacility} 
         onBack={() => setSelectedFacility(null)} 
       />
     );
