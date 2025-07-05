@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Users, Calendar, Video, Heart, MessageCircle, Plus } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, Video, Heart, MessageCircle, Plus, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
+import PostDetailView from './PostDetailView';
 
 interface HealthCommunityProps {
   onBack: () => void;
@@ -13,10 +14,12 @@ interface CommunityPost {
   avatar: string;
   title: string;
   content: string;
+  fullContent: string;
   category: string;
   likes: number;
   comments: number;
   timestamp: string;
+  isLiked: boolean;
 }
 
 interface UpcomingEvent {
@@ -27,23 +30,29 @@ interface UpcomingEvent {
   time: string;
   participants: number;
   maxParticipants: number;
+  meetingLink?: string;
 }
 
 const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState<'posts' | 'events'>('posts');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
+  const [showComments, setShowComments] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState('');
 
-  const posts: CommunityPost[] = [
+  const [posts, setPosts] = useState<CommunityPost[]>([
     {
       id: '1',
       author: 'Sarah M.',
       avatar: 'SM',
       title: 'My Journey with Breast Cancer - 5 Years Strong',
       content: 'Today marks 5 years since my diagnosis. I want to share hope with everyone fighting this battle. The journey was tough, but with faith, family support, and amazing doctors, I made it through...',
+      fullContent: 'Today marks 5 years since my diagnosis. I want to share hope with everyone fighting this battle. The journey was tough, but with faith, family support, and amazing doctors, I made it through. Early detection saved my life - I encourage all women to get regular screenings. The chemotherapy was difficult, but the support from this community kept me going. Never give up hope, and always advocate for your health.',
       category: 'Cancer Survivor',
       likes: 45,
       comments: 12,
-      timestamp: '2 hours ago'
+      timestamp: '2 hours ago',
+      isLiked: false
     },
     {
       id: '2',
@@ -51,10 +60,12 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
       avatar: 'JK',
       title: 'Managing Diabetes: Tips from a Specialist',
       content: 'As an endocrinologist, I want to share some practical tips for managing diabetes effectively. Regular monitoring, proper diet, and exercise are key...',
+      fullContent: 'As an endocrinologist, I want to share some practical tips for managing diabetes effectively. Regular monitoring, proper diet, and exercise are key components. Monitor your blood sugar levels consistently, eat balanced meals with controlled portions, stay active with at least 30 minutes of exercise daily, take medications as prescribed, and maintain regular check-ups with your healthcare team.',
       category: 'Diabetes',
       likes: 32,
       comments: 8,
-      timestamp: '4 hours ago'
+      timestamp: '4 hours ago',
+      isLiked: false
     },
     {
       id: '3',
@@ -62,12 +73,14 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
       avatar: 'MW',
       title: 'Living with Arthritis - Daily Exercises That Help',
       content: 'Been managing arthritis for 10 years now. Here are some gentle exercises that have really helped me maintain mobility and reduce pain...',
+      fullContent: 'Been managing arthritis for 10 years now. Here are some gentle exercises that have really helped me maintain mobility and reduce pain. Swimming is excellent for joint mobility, gentle yoga reduces stiffness, walking for 20-30 minutes daily, and stretching exercises in the morning. Always consult your doctor before starting any exercise routine.',
       category: 'Arthritis',
       likes: 28,
       comments: 15,
-      timestamp: '1 day ago'
+      timestamp: '1 day ago',
+      isLiked: false
     }
-  ];
+  ]);
 
   const upcomingEvents: UpcomingEvent[] = [
     {
@@ -77,7 +90,8 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
       date: '2025-01-08',
       time: '19:00',
       participants: 24,
-      maxParticipants: 50
+      maxParticipants: 50,
+      meetingLink: 'https://meet.google.com/abc-defg-hij'
     },
     {
       id: '2',
@@ -86,7 +100,8 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
       date: '2025-01-10',
       time: '15:00',
       participants: 8,
-      maxParticipants: 20
+      maxParticipants: 20,
+      meetingLink: 'https://zoom.us/j/123456789'
     },
     {
       id: '3',
@@ -95,7 +110,8 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
       date: '2025-01-12',
       time: '18:00',
       participants: 15,
-      maxParticipants: 30
+      maxParticipants: 30,
+      meetingLink: 'https://meet.google.com/xyz-uvwx-rst'
     }
   ];
 
@@ -104,6 +120,39 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
   const filteredPosts = selectedCategory === 'All' 
     ? posts 
     : posts.filter(post => post.category === selectedCategory);
+
+  const handleLike = (postId: string) => {
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? {
+              ...post,
+              isLiked: !post.isLiked,
+              likes: post.isLiked ? post.likes - 1 : post.likes + 1
+            }
+          : post
+      )
+    );
+  };
+
+  const handleShare = (post: CommunityPost) => {
+    const shareText = `Read more or download the Haraka-Afya app to learn how to protect your health today.\n\n"${post.title}" - ${post.author}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: post.title,
+        text: shareText,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(shareText);
+      alert('Share text copied to clipboard!');
+    }
+  };
+
+  const handleJoinMeeting = (meetingLink: string) => {
+    window.open(meetingLink, '_blank');
+  };
 
   const getEventIcon = (type: string) => {
     switch (type) {
@@ -122,6 +171,15 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (selectedPost) {
+    return (
+      <PostDetailView 
+        post={selectedPost} 
+        onBack={() => setSelectedPost(null)} 
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 pb-20">
@@ -206,17 +264,41 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
                     </div>
                   </div>
                   
-                  <h4 className="font-semibold text-gray-900 mb-2">{post.title}</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">{post.content}</p>
+                  <div 
+                    className="cursor-pointer"
+                    onClick={() => setSelectedPost(post)}
+                  >
+                    <h4 className="font-semibold text-gray-900 mb-2 hover:text-primary transition-colors">
+                      {post.title}
+                    </h4>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">{post.content}</p>
+                  </div>
                   
-                  <div className="flex items-center space-x-6">
-                    <button className="flex items-center space-x-1 text-gray-500 hover:text-red-500">
-                      <Heart className="w-4 h-4" />
-                      <span className="text-sm">{post.likes}</span>
-                    </button>
-                    <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-500">
-                      <MessageCircle className="w-4 h-4" />
-                      <span className="text-sm">{post.comments}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-6">
+                      <button 
+                        onClick={() => handleLike(post.id)}
+                        className={`flex items-center space-x-1 transition-colors ${
+                          post.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+                        }`}
+                      >
+                        <Heart className={`w-4 h-4 ${post.isLiked ? 'fill-current' : ''}`} />
+                        <span className="text-sm">{post.likes}</span>
+                      </button>
+                      <button 
+                        onClick={() => setSelectedPost(post)}
+                        className="flex items-center space-x-1 text-gray-500 hover:text-blue-500 transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span className="text-sm">{post.comments}</span>
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => handleShare(post)}
+                      className="flex items-center space-x-1 text-gray-500 hover:text-green-500 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      <span className="text-sm">Share</span>
                     </button>
                   </div>
                 </div>
@@ -254,7 +336,11 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
                   <div className="text-sm text-gray-600">
                     {event.participants}/{event.maxParticipants} participants
                   </div>
-                  <Button size="sm" className="bg-primary hover:bg-primary/90">
+                  <Button 
+                    size="sm" 
+                    className="bg-primary hover:bg-primary/90"
+                    onClick={() => event.meetingLink && handleJoinMeeting(event.meetingLink)}
+                  >
                     <Video className="w-4 h-4 mr-2" />
                     Join Meeting
                   </Button>

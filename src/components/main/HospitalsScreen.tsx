@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Phone, Star, Filter, Navigation, Clock, Building2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Star, Filter, Navigation, Clock, Building2, Wrench } from 'lucide-react';
 import { Button } from '../ui/button';
+import FacilityChecker from '../hospitals/FacilityChecker';
 
 interface HospitalsScreenProps {
   onNavigate: (screen: string) => void;
@@ -24,6 +24,7 @@ interface Hospital {
 const HospitalsScreen: React.FC<HospitalsScreenProps> = ({ onNavigate }) => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [showFacilityChecker, setShowFacilityChecker] = useState(false);
 
   const hospitals: Hospital[] = [
     {
@@ -183,6 +184,10 @@ const HospitalsScreen: React.FC<HospitalsScreenProps> = ({ onNavigate }) => {
     }
   };
 
+  if (showFacilityChecker) {
+    return <FacilityChecker onBack={() => setShowFacilityChecker(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/3 to-gold/3 pb-20">
       {/* Header */}
@@ -215,6 +220,25 @@ const HospitalsScreen: React.FC<HospitalsScreenProps> = ({ onNavigate }) => {
           >
             <Phone className="w-4 h-4 mr-2" />
             Emergency
+          </Button>
+        </div>
+      </div>
+
+      {/* Facility Checker Banner */}
+      <div className="bg-blue-500 text-white p-4 mx-6 mt-4 rounded-2xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold mb-1">Equipment & Doctors</h3>
+            <p className="text-sm opacity-90">Check facility equipment status</p>
+          </div>
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="bg-white text-blue-600"
+            onClick={() => setShowFacilityChecker(true)}
+          >
+            <Wrench className="w-4 h-4 mr-2" />
+            Check Facilities
           </Button>
         </div>
       </div>

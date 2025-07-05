@@ -1,7 +1,9 @@
-
 import React, { useState } from 'react';
 import { User, Settings, CreditCard, Bell, Shield, HelpCircle, LogOut, Edit, ChevronRight, Heart, Activity, Calendar, Pill } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import ProfileEditForm from '../profile/ProfileEditForm';
+import HealthStatsForm from '../profile/HealthStatsForm';
 
 interface ProfileScreenProps {
   userName: string;
@@ -11,12 +13,34 @@ interface ProfileScreenProps {
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ userName, userEmail, onNavigate }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'health' | 'settings'>('overview');
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [showHealthForm, setShowHealthForm] = useState(false);
+  
+  const [userData, setUserData] = useState({
+    firstName: userName,
+    lastName: '',
+    email: userEmail,
+    phone: '+254 712 345 678',
+    age: '28',
+    profilePicture: ''
+  });
+
+  const [healthStats, setHealthStats] = useState({
+    height: '170',
+    weight: '65',
+    bloodPressure: '120/80',
+    sugarLevel: '90',
+    heartRate: '72',
+    bloodType: 'O+'
+  });
 
   const healthData = [
-    { label: 'Height', value: '170 cm', icon: Activity },
-    { label: 'Weight', value: '65 kg', icon: Activity },
-    { label: 'Blood Type', value: 'O+', icon: Heart },
-    { label: 'Age', value: '28 years', icon: Calendar }
+    { label: 'Height', value: `${healthStats.height} cm`, icon: Activity },
+    { label: 'Weight', value: `${healthStats.weight} kg`, icon: Activity },
+    { label: 'Blood Pressure', value: `${healthStats.bloodPressure} mmHg`, icon: Heart },
+    { label: 'Blood Sugar', value: `${healthStats.sugarLevel} mg/dL`, icon: Activity },
+    { label: 'Heart Rate', value: `${healthStats.heartRate} BPM`, icon: Heart },
+    { label: 'Blood Type', value: healthStats.bloodType, icon: Heart }
   ];
 
   const medications = [
@@ -31,23 +55,39 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ userName, userEmail, onNa
     { id: 'help', icon: HelpCircle, label: 'Help & Support', description: 'Get assistance' },
   ];
 
+  const handleSaveProfile = (newData: any) => {
+    setUserData(newData);
+    setShowEditForm(false);
+  };
+
+  const handleSaveHealthStats = (newStats: any) => {
+    setHealthStats(newStats);
+    setShowHealthForm(false);
+  };
+
   const renderOverview = () => (
     <div className="space-y-6">
       {/* Profile Info */}
       <div className="bg-white rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-gray-900">Profile Information</h2>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={() => setShowEditForm(true)}>
             <Edit className="w-4 h-4" />
           </Button>
         </div>
         <div className="flex items-center space-x-4 mb-6">
-          <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center">
-            <User className="w-10 h-10 text-white" />
-          </div>
+          <Avatar className="w-20 h-20">
+            <AvatarImage src={userData.profilePicture || undefined} />
+            <AvatarFallback className="bg-primary text-white text-2xl">
+              {userData.firstName[0]}{userData.lastName?.[0] || ''}
+            </AvatarFallback>
+          </Avatar>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{userName}</h3>
-            <p className="text-gray-600">{userEmail}</p>
+            <h3 className="text-xl font-bold text-gray-900">
+              {userData.firstName} {userData.lastName}
+            </h3>
+            <p className="text-gray-600">{userData.email}</p>
+            <p className="text-gray-600">{userData.phone}</p>
             <div className="mt-2">
               <span className="inline-block bg-gold/20 text-gold px-3 py-1 rounded-full text-sm font-medium">
                 Premium Member
@@ -59,7 +99,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ userName, userEmail, onNa
 
       {/* Health Stats */}
       <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Health Statistics</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Health Statistics</h2>
+          <Button variant="ghost" size="sm" onClick={() => setShowHealthForm(true)}>
+            <Edit className="w-4 h-4" />
+          </Button>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           {healthData.map((item, index) => {
             const IconComponent = item.icon;
@@ -213,40 +258,59 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ userName, userEmail, onNa
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/3 to-gold/3 pb-20">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-primary/3 to-gold/3 pb-20">
+        {/* Header */}
+        <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">
+          <div className="px-6 py-4">
+            <h1 className="text-lg font-semibold text-gray-900 text-center">Profile</h1>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
         <div className="px-6 py-4">
-          <h1 className="text-lg font-semibold text-gray-900 text-center">Profile</h1>
+          <div className="flex bg-white rounded-2xl p-1 shadow-sm">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-6">
+          {activeTab === 'overview' && renderOverview()}
+          {activeTab === 'health' && renderHealth()}
+          {activeTab === 'settings' && renderSettings()}
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="px-6 py-4">
-        <div className="flex bg-white rounded-2xl p-1 shadow-sm">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
-                activeTab === tab.id
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Edit Forms */}
+      {showEditForm && (
+        <ProfileEditForm
+          userData={userData}
+          onSave={handleSaveProfile}
+          onCancel={() => setShowEditForm(false)}
+        />
+      )}
 
-      {/* Content */}
-      <div className="px-6">
-        {activeTab === 'overview' && renderOverview()}
-        {activeTab === 'health' && renderHealth()}
-        {activeTab === 'settings' && renderSettings()}
-      </div>
-    </div>
+      {showHealthForm && (
+        <HealthStatsForm
+          currentStats={healthStats}
+          onSave={handleSaveHealthStats}
+          onCancel={() => setShowHealthForm(false)}
+        />
+      )}
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { MessageCircle, Send, X, User, Bot } from 'lucide-react';
+import { MessageCircle, Send, X, User, Bot, Shuffle } from 'lucide-react';
 import { Button } from '../ui/button';
+import { sampleConversations } from '../../data/sampleConversations';
 
 interface WhatsAppChatProps {
   isOpen: boolean;
@@ -26,6 +27,19 @@ const WhatsAppChat: React.FC<WhatsAppChatProps> = ({ isOpen, onClose }) => {
   ]);
   const [inputText, setInputText] = useState('');
   const [showConnectOption, setShowConnectOption] = useState(false);
+
+  const loadSampleConversation = () => {
+    const randomConversation = sampleConversations[Math.floor(Math.random() * sampleConversations.length)];
+    const conversationMessages = randomConversation.messages.map(msg => ({
+      id: Date.now().toString() + Math.random(),
+      type: msg.type,
+      content: msg.content,
+      timestamp: new Date()
+    }));
+    
+    setMessages(conversationMessages);
+    setShowConnectOption(true);
+  };
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
@@ -77,9 +91,20 @@ const WhatsAppChat: React.FC<WhatsAppChatProps> = ({ isOpen, onClose }) => {
               <p className="text-xs opacity-90">Online now</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/20">
-            <X className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={loadSampleConversation}
+              className="text-white hover:bg-white/20"
+              title="Load sample conversation"
+            >
+              <Shuffle className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/20">
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Messages */}
