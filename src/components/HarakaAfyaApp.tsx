@@ -19,6 +19,8 @@ import WhatsAppFloat from './chat/WhatsAppFloat';
 import MedicalDictionary from './medical/MedicalDictionary';
 import MedicationReminders from './medication/MedicationReminders';
 import HealthCommunity from './community/HealthCommunity';
+import PrivacyScreen from './privacy/PrivacyScreen';
+import HelpScreen from './support/HelpScreen';
 
 type AppScreen = 
   | 'splash' 
@@ -36,7 +38,9 @@ type AppScreen =
   | 'sidebar'
   | 'medical-dictionary'
   | 'medication-reminders'
-  | 'health-community';
+  | 'health-community'
+  | 'privacy'
+  | 'help';
 
 interface User {
   id: string;
@@ -134,6 +138,8 @@ const HarakaAfyaApp: React.FC = () => {
       case 'medical-dictionary':
       case 'medication-reminders':
       case 'health-community':
+      case 'privacy':
+      case 'help':
         setCurrentScreen(screen as AppScreen);
         setActiveTab(screen);
         break;
@@ -272,6 +278,12 @@ const HarakaAfyaApp: React.FC = () => {
             onSelectPlan={handleSelectPlan}
           />
         );
+      
+      case 'privacy':
+        return <PrivacyScreen onBack={handleBackToHome} />;
+      
+      case 'help':
+        return <HelpScreen onBack={handleBackToHome} />;
       
       default:
         return <SplashScreen onComplete={handleSplashComplete} />;
