@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Users, Calendar, Video, Heart, MessageCircle, Plus, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import PostDetailView from './PostDetailView';
+import ShareModal from './ShareModal';
 
 interface HealthCommunityProps {
   onBack: () => void;
@@ -37,8 +37,8 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState<'posts' | 'events'>('posts');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
-  const [showComments, setShowComments] = useState<string | null>(null);
-  const [newComment, setNewComment] = useState('');
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [postToShare, setPostToShare] = useState<CommunityPost | null>(null);
 
   const [posts, setPosts] = useState<CommunityPost[]>([
     {
@@ -136,18 +136,8 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
   };
 
   const handleShare = (post: CommunityPost) => {
-    const shareText = `Read more or download the Haraka-Afya app to learn how to protect your health today.\n\n"${post.title}" - ${post.author}`;
-    
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: shareText,
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(shareText);
-      alert('Share text copied to clipboard!');
-    }
+    setPostToShare(post);
+    setShowShareModal(true);
   };
 
   const handleJoinMeeting = (meetingLink: string) => {
@@ -350,6 +340,18 @@ const HealthCommunity: React.FC<HealthCommunityProps> = ({ onBack }) => {
           </div>
         )}
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && postToShare && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => {
+            setShowShareModal(false);
+            setPostToShare(null);
+          }}
+          post={postToShare}
+        />
+      )}
     </div>
   );
 };

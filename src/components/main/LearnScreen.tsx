@@ -1,7 +1,8 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, BookOpen, Clock, TrendingUp, Heart, Shield, Users } from 'lucide-react';
 import { Button } from '../ui/button';
+import ArticleDetailView from '../learn/ArticleDetailView';
+import PostStoryForm from '../learn/PostStoryForm';
 
 interface LearnScreenProps {
   onNavigate: (screen: string) => void;
@@ -9,6 +10,8 @@ interface LearnScreenProps {
 
 const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [showPostStoryForm, setShowPostStoryForm] = useState(false);
 
   const categories = [
     { id: 'all', label: 'All Topics' },
@@ -28,6 +31,7 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
       date: '2 days ago',
       image: '/placeholder.svg',
       description: 'Essential tips for protecting yourself and your family from malaria',
+      fullContent: 'Malaria remains one of the leading health concerns in Kenya, particularly affecting children under five and pregnant women. This comprehensive guide covers prevention strategies, early detection, and treatment options.\n\nPrevention is always better than cure. Use insecticide-treated bed nets, eliminate standing water around your home, and consider indoor residual spraying. Early symptoms include fever, chills, headache, and body aches.\n\nIf you suspect malaria, seek immediate medical attention. Rapid diagnostic tests are available at most health facilities. With proper prevention and early treatment, malaria is completely preventable and treatable.',
       trending: true
     },
     {
@@ -38,7 +42,8 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
       author: 'Nutritionist Mary Kibet',
       date: '1 week ago',
       image: '/placeholder.svg',
-      description: 'How to maintain a nutritious diet without breaking the bank'
+      description: 'How to maintain a nutritious diet without breaking the bank',
+      fullContent: 'Eating healthy doesn\'t have to be expensive. With proper planning and smart shopping, you can maintain a nutritious diet on any budget.\n\nFocus on local, seasonal produce which is often cheaper and more nutritious. Buy grains and legumes in bulk. Plan your meals around affordable protein sources like beans, lentils, and eggs.\n\nCook at home more often and prepare meals in batches. This not only saves money but also helps you control ingredients and portions. Remember, investing in your health through good nutrition is one of the best investments you can make.'
     },
     {
       id: 3,
@@ -48,7 +53,8 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
       author: 'Dr. James Mwangi',
       date: '3 days ago',
       image: '/placeholder.svg',
-      description: 'Practical strategies for mental wellness in busy city life'
+      description: 'Practical strategies for mental wellness in busy city life',
+      fullContent: 'Urban life in Kenya presents unique stressors - traffic, noise, work pressure, and social challenges. However, there are effective ways to manage stress and maintain mental wellness.\n\nPractice deep breathing exercises during traffic jams. Take regular breaks from work and social media. Find green spaces for relaxation, even if it\'s just a small park.\n\nStay connected with family and friends. Don\'t hesitate to seek professional help when needed. Remember, taking care of your mental health is just as important as physical health.'
     },
     {
       id: 4,
@@ -58,7 +64,8 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
       author: 'Fitness Expert Ann Njoroge',
       date: '5 days ago',
       image: '/placeholder.svg',
-      description: 'Stay fit with simple exercises you can do anywhere'
+      description: 'Stay fit with simple exercises you can do anywhere',
+      fullContent: 'You don\'t need expensive gym equipment to stay fit. These simple exercises can be done at home, in the office, or anywhere you have a small space.\n\nStart with bodyweight exercises like push-ups, squats, lunges, and planks. Use water bottles as weights. Take the stairs instead of elevators. Walk or jog in place while watching TV.\n\nConsistency is key. Even 15-20 minutes of daily activity can make a significant difference in your health and fitness levels.'
     }
   ];
 
@@ -72,6 +79,24 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
     "Practice deep breathing for stress relief",
     "Wash hands frequently to prevent infections"
   ];
+
+  const handleStoryPosted = (newStory: any) => {
+    // In a real app, this would save to backend
+    console.log('New story posted:', newStory);
+    setShowPostStoryForm(false);
+    // You could also navigate to community to show the new post
+    alert('Your story has been posted to the community!');
+  };
+
+  if (selectedArticle) {
+    return (
+      <ArticleDetailView 
+        article={selectedArticle}
+        onBack={() => setSelectedArticle(null)}
+        onPostStory={() => setShowPostStoryForm(true)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/3 to-gold/3 pb-20">
@@ -139,12 +164,16 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
           </div>
           <div className="space-y-4">
             {filteredArticles.map((article) => (
-              <div key={article.id} className="bg-white rounded-2xl p-4 shadow-sm">
+              <div 
+                key={article.id} 
+                className="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setSelectedArticle(article)}
+              >
                 <div className="flex space-x-4">
                   <div className="w-20 h-20 bg-gray-100 rounded-xl flex-shrink-0"></div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900 text-sm leading-snug">
+                      <h3 className="font-semibold text-gray-900 text-sm leading-snug hover:text-primary transition-colors">
                         {article.title}
                       </h3>
                       {article.trending && (
@@ -190,6 +219,14 @@ const LearnScreen: React.FC<LearnScreenProps> = ({ onNavigate }) => {
           </button>
         </div>
       </div>
+
+      {/* Post Story Form Modal */}
+      {showPostStoryForm && (
+        <PostStoryForm 
+          onSave={handleStoryPosted}
+          onCancel={() => setShowPostStoryForm(false)}
+        />
+      )}
     </div>
   );
 };
