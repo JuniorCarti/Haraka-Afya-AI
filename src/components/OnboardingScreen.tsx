@@ -21,19 +21,22 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
       icon: Heart,
       title: "AI-Powered Health Analysis",
       description: "Get instant health insights powered by advanced AI technology. Describe your symptoms in English, Swahili, or Sheng.",
-      color: "from-pink-500 to-red-500"
+      color: "from-pink-500 to-red-500",
+      backgroundImage: "url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"
     },
     {
       icon: Zap,
       title: "Instant Healthcare Access",
       description: "Connect with healthcare providers instantly. Find nearby hospitals, clinics, and emergency services in real-time.",
-      color: "from-blue-500 to-cyan-500"
+      color: "from-blue-500 to-cyan-500",
+      backgroundImage: "url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"
     },
     {
       icon: Shield,
       title: "24/7 Health Support",
       description: "Your health companion is always available. Get medical guidance, track symptoms, and stay informed about your wellness.",
-      color: "from-green-500 to-emerald-500"
+      color: "from-green-500 to-emerald-500",
+      backgroundImage: "url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')"
     }
   ];
 
@@ -54,59 +57,73 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-gold/5 flex flex-col">
-      {/* Skip Button */}
-      <div className="flex justify-end p-6">
-        <Button variant="ghost" onClick={onSkip} className="text-gray-600">
-          <SkipForward className="w-4 h-4 mr-2" />
-          Skip
-        </Button>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 -mt-16">
-        {/* Icon */}
-        <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${currentData.color} flex items-center justify-center mb-8 animate-scale-in shadow-2xl`}>
-          <IconComponent className="w-16 h-16 text-white" />
+    <div 
+      className="min-h-screen flex flex-col relative"
+      style={{ 
+        backgroundImage: currentData.backgroundImage,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      {/* Content Container */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Skip Button */}
+        <div className="flex justify-end p-6">
+          <Button variant="ghost" onClick={onSkip} className="text-white/90 hover:text-white hover:bg-white/10">
+            <SkipForward className="w-4 h-4 mr-2" />
+            Skip
+          </Button>
         </div>
 
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-6 animate-fade-in-up">
-          {currentData.title}
-        </h2>
+        {/* Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-8 -mt-16">
+          {/* Icon */}
+          <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${currentData.color} flex items-center justify-center mb-8 animate-scale-in shadow-2xl`}>
+            <IconComponent className="w-16 h-16 text-white" />
+          </div>
 
-        {/* Description */}
-        <p className="text-gray-600 text-center text-lg leading-relaxed max-w-sm animate-fade-in-up">
-          {currentData.description}
-        </p>
-      </div>
+          {/* Title */}
+          <h2 className="text-3xl font-bold text-white text-center mb-6 animate-fade-in-up drop-shadow-lg">
+            {currentData.title}
+          </h2>
 
-      {/* Navigation */}
-      <div className="p-8">
-        {/* Progress Indicators */}
-        <div className="flex justify-center space-x-2 mb-8">
-          {onboardingData.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === currentStep 
-                  ? 'w-8 bg-primary' 
-                  : index < currentStep 
-                    ? 'w-2 bg-primary/60' 
-                    : 'w-2 bg-gray-200'
-              }`}
-            />
-          ))}
+          {/* Description */}
+          <p className="text-white/90 text-center text-lg leading-relaxed max-w-sm animate-fade-in-up drop-shadow-md">
+            {currentData.description}
+          </p>
         </div>
 
-        {/* Next Button */}
-        <Button 
-          onClick={handleNext}
-          className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transform hover:scale-105 transition-all duration-200"
-        >
-          {currentStep === onboardingData.length - 1 ? 'Get Started' : 'Continue'}
-          <ChevronRight className="w-5 h-5 ml-2" />
-        </Button>
+        {/* Navigation */}
+        <div className="p-8">
+          {/* Progress Indicators */}
+          <div className="flex justify-center space-x-2 mb-8">
+            {onboardingData.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === currentStep 
+                    ? 'w-8 bg-white' 
+                    : index < currentStep 
+                      ? 'w-2 bg-white/60' 
+                      : 'w-2 bg-white/30'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Next Button */}
+          <Button 
+            onClick={handleNext}
+            className="w-full py-4 text-lg font-semibold bg-white text-gray-900 hover:bg-gray-100 transform hover:scale-105 transition-all duration-200"
+          >
+            {currentStep === onboardingData.length - 1 ? 'Get Started' : 'Continue'}
+            <ChevronRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );

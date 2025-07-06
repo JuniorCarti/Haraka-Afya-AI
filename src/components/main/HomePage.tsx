@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Menu, Bell, MapPin, Mic, Type, Phone, Heart, Activity, Thermometer, Pill, Calendar, ChevronRight } from 'lucide-react';
+import { Menu, Bell, MapPin, Mic, Type, Phone, Heart, Activity, Thermometer, Pill, Calendar, ChevronRight, X, Stethoscope } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface HomePageProps {
@@ -10,6 +11,7 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) => {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [showSupportMessage, setShowSupportMessage] = useState(true);
 
   const quickActions = [
     { id: 'symptoms', icon: Activity, label: 'Check Symptoms', description: 'AI-powered health analysis' },
@@ -60,11 +62,41 @@ const HomePage: React.FC<HomePageProps> = ({ userName, greeting, onNavigate }) =
       <div className="px-6 py-6 space-y-8">
         {/* Welcome Section */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {greeting}, {userName}! 🌿
-          </h1>
-          <p className="text-gray-600">How can I help you stay healthy today?</p>
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mr-4">
+              <Stethoscope className="w-8 h-8 text-green-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                {greeting}, {userName}!
+              </h1>
+              <p className="text-gray-600">How can I help you stay healthy today?</p>
+            </div>
+          </div>
         </div>
+
+        {/* Support Message - Animated and Dismissible */}
+        {showSupportMessage && (
+          <div className="relative">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 text-white animate-slide-in-right shadow-lg">
+              <button
+                onClick={() => setShowSupportMessage(false)}
+                className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-center space-x-3 pr-8">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+                  <Heart className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Haraka-Afya Support</h3>
+                  <p className="text-sm opacity-90">Need help? Chat with our AI assistant anytime!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Emergency Banner */}
         <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-4 text-white">
