@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      hospitals: {
+        Row: {
+          address: string | null
+          created_at: string
+          has_emergency: boolean | null
+          id: string
+          is_public: boolean | null
+          is_sha_accredited: boolean | null
+          latitude: number
+          longitude: number
+          name: string
+          phone: string | null
+          services: string[] | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          has_emergency?: boolean | null
+          id?: string
+          is_public?: boolean | null
+          is_sha_accredited?: boolean | null
+          latitude: number
+          longitude: number
+          name: string
+          phone?: string | null
+          services?: string[] | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          has_emergency?: boolean | null
+          id?: string
+          is_public?: boolean | null
+          is_sha_accredited?: boolean | null
+          latitude?: number
+          longitude?: number
+          name?: string
+          phone?: string | null
+          services?: string[] | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number | null

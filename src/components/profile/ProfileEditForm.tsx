@@ -4,6 +4,8 @@ import { ArrowLeft, Camera, Save, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ProfileEditFormProps {
   userData: {
@@ -22,16 +24,59 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ userData, onSave, onC
   const [formData, setFormData] = useState(userData);
   const [profileImage, setProfileImage] = useState<string | null>(userData.profilePicture || null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setProfileImage(result);
-        setFormData(prev => ({ ...prev, profilePicture: result }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to upload an image');
+        return;
+      }
+
+      // Create unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        toast.error('Failed to upload image: ' + error.message);
+        return;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Update profile in database
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
+
+      if (updateError) {
+        toast.error('Failed to update profile: ' + updateError.message);
+        return;
+      }
+
+      // Update local state
+      setProfileImage(publicUrl);
+      setFormData(prev => ({ ...prev, profilePicture: publicUrl }));
+      toast.success('Profile picture updated successfully!');
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image');
     }
   };
 
