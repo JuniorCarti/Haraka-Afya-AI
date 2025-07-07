@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Button } from '../ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface LoginScreenProps {
   onLoginComplete: (userData: any) => void;
@@ -19,14 +21,55 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
-    onLoginComplete({ firstName: 'User', email: 'user@example.com', provider });
+  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider === 'twitter' ? 'twitter' : provider,
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      toast.error('An error occurred during login');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLogin = () => {
-    onLoginComplete({ firstName: 'User', email: formData.email });
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (data.user) {
+        toast.success('Logged in successfully!');
+        onLoginComplete({ 
+          firstName: 'User', 
+          email: formData.email,
+          user: data.user 
+        });
+      }
+    } catch (error) {
+      toast.error('An error occurred during login');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -134,9 +177,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
         <Button 
           className="w-full py-4 text-lg font-semibold" 
           onClick={handleLogin}
-          disabled={!formData.email || !formData.password}
+          disabled={loading || !formData.email || !formData.password}
         >
-          Sign In
+          {loading ? 'Signing In...' : 'Sign In'}
         </Button>
         
         <div className="text-center">

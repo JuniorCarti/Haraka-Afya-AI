@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Mail, User, Lock } from 'lucide-react';
 import { Button } from '../ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SignUpScreenProps {
   onSignUpComplete: (userData: any) => void;
@@ -18,18 +20,73 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUpComplete, onNavigat
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSocialSignUp = (provider: string) => {
-    console.log(`Sign up with ${provider}`);
-    // Simulate successful social sign-up
-    onSignUpComplete({ firstName: 'User', email: 'user@example.com', provider });
+  const handleSocialSignUp = async (provider: 'google' | 'facebook' | 'twitter') => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider === 'twitter' ? 'twitter' : provider,
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error) {
+      toast.error('An error occurred during sign up');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < 3) {
       setStep(step + 1);
     } else {
-      onSignUpComplete(formData);
+      await handleSignUp();
+    }
+  };
+
+  const handleSignUp = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            first_name: formData.firstName
+          }
+        }
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (data.user) {
+        toast.success('Account created successfully! Please check your email to verify your account.');
+        onSignUpComplete({ 
+          firstName: formData.firstName, 
+          email: formData.email,
+          user: data.user 
+        });
+      }
+    } catch (error) {
+      toast.error('An error occurred during sign up');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -207,12 +264,13 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUpComplete, onNavigat
           className="w-full py-4 text-lg font-semibold" 
           onClick={handleNext}
           disabled={
+            loading ||
             (step === 1 && !formData.firstName) ||
             (step === 2 && !formData.email) ||
             (step === 3 && (!formData.password || formData.password !== formData.confirmPassword))
           }
         >
-          {step === 3 ? 'Create Account' : 'Continue'}
+          {loading ? 'Creating Account...' : (step === 3 ? 'Create Account' : 'Continue')}
         </Button>
         
         <div className="text-center">

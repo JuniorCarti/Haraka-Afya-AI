@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import SplashScreen from './SplashScreen';
 import OnboardingScreen from './OnboardingScreen';
 import SignUpScreen from './auth/SignUpScreen';
@@ -52,32 +54,54 @@ interface User {
 const HarakaAfyaApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('splash');
   const [onboardingStep, setOnboardingStep] = useState(0);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [showEmergencyServices, setShowEmergencyServices] = useState(false);
   const [showWhatsAppChat, setShowWhatsAppChat] = useState(false);
 
-  // Simulate app initialization
+  // Auth state management
   useEffect(() => {
-    // Check if user is returning (simulate localStorage check)
-    const returningUser = localStorage.getItem('haraka-user');
-    
-    if (returningUser) {
-      const userData = JSON.parse(returningUser);
-      setUser(userData);
-      setIsAuthenticated(true);
-      // Skip splash and go to home for returning users
-      setTimeout(() => {
-        setCurrentScreen('home');
-      }, 2000);
-    } else {
-      // New user - show splash then onboarding
-      setTimeout(() => {
-        setCurrentScreen('onboarding');
-      }, 3000);
-    }
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
+        
+        if (session?.user) {
+          setCurrentScreen('home');
+        } else if (currentScreen === 'home') {
+          setCurrentScreen('signup');
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+      
+      if (session?.user) {
+        // Skip splash and go to home for authenticated users
+        setTimeout(() => {
+          setCurrentScreen('home');
+          setLoading(false);
+        }, 2000);
+      } else {
+        // New user - show splash then onboarding
+        setTimeout(() => {
+          setCurrentScreen('onboarding');
+          setLoading(false);
+        }, 3000);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSplashComplete = () => {
@@ -93,38 +117,12 @@ const HarakaAfyaApp: React.FC = () => {
   };
 
   const handleSignUpComplete = (userData: any) => {
-    const newUser: User = {
-      id: Date.now().toString(),
-      firstName: userData.firstName || 'User',
-      email: userData.email,
-      isFirstTime: true
-    };
-    
-    setUser(newUser);
-    setIsAuthenticated(true);
-    
-    // Save user to localStorage
-    localStorage.setItem('haraka-user', JSON.stringify(newUser));
-    
-    setCurrentScreen('home');
+    // Auth state change will handle navigation automatically
     setActiveTab('home');
   };
 
   const handleLoginComplete = (userData: any) => {
-    const existingUser: User = {
-      id: Date.now().toString(),
-      firstName: userData.firstName || 'User',
-      email: userData.email,
-      isFirstTime: false
-    };
-    
-    setUser(existingUser);
-    setIsAuthenticated(true);
-    
-    // Save user to localStorage
-    localStorage.setItem('haraka-user', JSON.stringify(existingUser));
-    
-    setCurrentScreen('home');
+    // Auth state change will handle navigation automatically
     setActiveTab('home');
   };
 
@@ -163,11 +161,8 @@ const HarakaAfyaApp: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('haraka-user');
-    setCurrentScreen('signup');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsSidebarOpen(false);
   };
 
@@ -235,7 +230,7 @@ const HarakaAfyaApp: React.FC = () => {
       case 'home':
         return (
           <HomePage
-            userName={user?.firstName || 'User'}
+            userName={user?.user_metadata?.first_name || 'User'}
             greeting={getGreeting()}
             onNavigate={handleNavigation}
           />
@@ -253,7 +248,7 @@ const HarakaAfyaApp: React.FC = () => {
       case 'profile':
         return (
           <ProfileScreen
-            userName={user?.firstName || 'User'}
+            userName={user?.user_metadata?.first_name || 'User'}
             userEmail={user?.email || ''}
             onNavigate={handleNavigation}
           />
@@ -316,7 +311,7 @@ const HarakaAfyaApp: React.FC = () => {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           onNavigate={handleNavigation}
-          userName={user?.firstName || 'User'}
+          userName={user?.user_metadata?.first_name || 'User'}
           userEmail={user?.email || ''}
         />
       )}
