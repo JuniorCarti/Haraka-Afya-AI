@@ -51,7 +51,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ userName, userEmail, onNa
   const settingsItems = [
     { id: 'subscription', icon: CreditCard, label: 'Subscription Plans', description: 'Manage your plan' },
     { id: 'notifications', icon: Bell, label: 'Notifications', description: 'Push notifications & alerts' },
-    { id: 'privacy', icon: Shield, label: 'Privacy & Security', description: 'Data protection settings' },
+    { id: 'security-settings', icon: Shield, label: 'Security Settings', description: '2FA, biometric login & sessions' },
+    { id: 'privacy', icon: Shield, label: 'Privacy & Data', description: 'Data protection settings' },
     { id: 'help', icon: HelpCircle, label: 'Help & Support', description: 'Get assistance' },
   ];
 

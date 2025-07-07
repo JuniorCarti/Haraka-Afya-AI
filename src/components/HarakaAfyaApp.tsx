@@ -23,6 +23,7 @@ import MedicationReminders from './medication/MedicationReminders';
 import HealthCommunity from './community/HealthCommunity';
 import PrivacyScreen from './privacy/PrivacyScreen';
 import HelpScreen from './support/HelpScreen';
+import SecuritySettingsScreen from './security/SecuritySettingsScreen';
 
 type AppScreen = 
   | 'splash' 
@@ -42,7 +43,8 @@ type AppScreen =
   | 'medication-reminders'
   | 'health-community'
   | 'privacy'
-  | 'help';
+  | 'help'
+  | 'security-settings';
 
 interface User {
   id: string;
@@ -138,6 +140,7 @@ const HarakaAfyaApp: React.FC = () => {
       case 'health-community':
       case 'privacy':
       case 'help':
+      case 'security-settings':
         setCurrentScreen(screen as AppScreen);
         setActiveTab(screen);
         break;
@@ -297,6 +300,9 @@ const HarakaAfyaApp: React.FC = () => {
       
       case 'help':
         return <HelpScreen onBack={handleBackToHome} />;
+      
+      case 'security-settings':
+        return <SecuritySettingsScreen onBack={handleBackToHome} />;
       
       default:
         return <SplashScreen onComplete={handleSplashComplete} />;
