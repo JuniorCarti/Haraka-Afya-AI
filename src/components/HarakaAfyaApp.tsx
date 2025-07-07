@@ -162,8 +162,26 @@ const HarakaAfyaApp: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setIsSidebarOpen(false);
+    try {
+      await supabase.auth.signOut();
+      setIsSidebarOpen(false);
+      setCurrentScreen('login');
+      setActiveTab('home');
+      // Show success toast
+      const { toast } = await import('@/hooks/use-toast');
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      const { toast } = await import('@/hooks/use-toast');
+      toast({
+        title: "Logout failed",
+        description: "There was an error logging out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBackToHome = () => {

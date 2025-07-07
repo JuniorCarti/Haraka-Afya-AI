@@ -1,1 +1,36 @@
 project_id = "edkorswmkdkzfwnrilan"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 54324
+external_url = "https://edkorswmkdkzfwnrilan.supabase.co/auth/v1"
+jwt_expiry = 3600
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://haraka-afya-connect.lovable.app/"]
+anon_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVka29yc3dta2RremZ3bnJpbGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1OTI5MDQsImV4cCI6MjA2NzE2ODkwNH0.J26AflA1fNAtXsh5yRTkIdAvEbO6HjUTSnUb9DIe1WU"
+service_role_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVka29yc3dta2RremZ3bnJpbGFuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyMDUwOTMwNCwiZXhwIjoyMDM2MDg1MzA0fQ.1e-k8YSz8FfBZvvDz0_KrWjsWyy7ZPUyNGdNSKFh2c0"
+
+[db]
+port = 54322
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.customer-portal]
+verify_jwt = false
+
+[functions.check-subscription]
+verify_jwt = false
+
+[functions.mpesa-payment]
+verify_jwt = false
+
+[functions.airtel-payment]
+verify_jwt = false

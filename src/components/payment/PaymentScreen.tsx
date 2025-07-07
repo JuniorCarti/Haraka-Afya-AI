@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface PaymentScreenProps {
   onBack: () => void;
+  selectedPlan?: {
+    id: string;
+    name: string;
+    price: number;
+  };
 }
 
-const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
+const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [step, setStep] = useState<'select' | 'details' | 'processing' | 'success'>('select');
   const [paymentDetails, setPaymentDetails] = useState({
@@ -15,8 +22,10 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
     cvv: '',
     name: '',
     phoneNumber: '',
-    amount: '2500'
+    amount: selectedPlan?.price?.toString() || '2500'
   });
+  const [transactionId, setTransactionId] = useState<string>('');
+  const { toast } = useToast();
 
   const paymentMethods = [
     { 
@@ -50,11 +59,77 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
     setStep('details');
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setStep('processing');
-    setTimeout(() => {
-      setStep('success');
-    }, 3000);
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to complete payment.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      let paymentResult;
+      
+      if (selectedMethod === 'mpesa') {
+        paymentResult = await supabase.functions.invoke('mpesa-payment', {
+          body: {
+            phoneNumber: paymentDetails.phoneNumber,
+            amount: parseFloat(paymentDetails.amount),
+            userId: user.id,
+            subscriptionTier: selectedPlan?.name || 'Premium'
+          }
+        });
+      } else if (selectedMethod === 'airtel') {
+        paymentResult = await supabase.functions.invoke('airtel-payment', {
+          body: {
+            phoneNumber: paymentDetails.phoneNumber,
+            amount: parseFloat(paymentDetails.amount),
+            userId: user.id,
+            subscriptionTier: selectedPlan?.name || 'Premium'
+          }
+        });
+      } else if (selectedMethod === 'stripe' || selectedMethod === 'visa') {
+        // Use existing Stripe checkout
+        paymentResult = await supabase.functions.invoke('create-checkout', {
+          body: {
+            priceId: selectedPlan?.id === 'premium' ? 'price_premium' : 'price_family',
+            successUrl: `${window.location.origin}/`,
+            cancelUrl: `${window.location.origin}/subscription`
+          }
+        });
+        
+        if (paymentResult.data?.url) {
+          window.location.href = paymentResult.data.url;
+          return;
+        }
+      }
+
+      if (paymentResult?.data?.success) {
+        setTransactionId(paymentResult.data.transactionId);
+        setStep('success');
+        toast({
+          title: "Payment successful!",
+          description: paymentResult.data.message,
+        });
+      } else {
+        throw new Error(paymentResult?.data?.message || 'Payment failed');
+      }
+      
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      setStep('details');
+      toast({
+        title: "Payment failed",
+        description: error.message || "There was an error processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const renderPaymentForm = () => {
@@ -118,11 +193,13 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
                 value={paymentDetails.phoneNumber}
                 onChange={(e) => setPaymentDetails({...paymentDetails, phoneNumber: e.target.value})}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                required
               />
+              <p className="text-xs text-gray-500 mt-1">Enter your phone number in format: 254XXXXXXXXX</p>
             </div>
             <div className="bg-green-50 p-4 rounded-xl">
               <p className="text-sm text-green-800">
-                A payment request will be sent to your phone. Enter your M-Pesa PIN to complete the transaction.
+                <strong>Test Mode:</strong> This is a demo payment. In production, a payment request would be sent to your phone.
               </p>
             </div>
           </div>
@@ -138,11 +215,13 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
                 value={paymentDetails.phoneNumber}
                 onChange={(e) => setPaymentDetails({...paymentDetails, phoneNumber: e.target.value})}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                required
               />
+              <p className="text-xs text-gray-500 mt-1">Enter your phone number in format: 254XXXXXXXXX</p>
             </div>
             <div className="bg-red-50 p-4 rounded-xl">
               <p className="text-sm text-red-800">
-                A payment request will be sent to your phone. Enter your Airtel Money PIN to complete the transaction.
+                <strong>Test Mode:</strong> This is a demo payment. In production, a payment request would be sent to your phone.
               </p>
             </div>
           </div>
@@ -160,9 +239,14 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack }) => {
             <CheckCircle className="w-10 h-10 text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Payment Successful!</h2>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 mb-4">
             Your payment of KSh {paymentDetails.amount} has been processed successfully.
           </p>
+          {transactionId && (
+            <p className="text-sm text-gray-500 mb-8">
+              Transaction ID: {transactionId}
+            </p>
+          )}
           <Button onClick={onBack} className="w-full">
             Continue
           </Button>
