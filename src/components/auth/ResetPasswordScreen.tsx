@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ResetPasswordScreenProps {
   onBack: () => void;
@@ -15,11 +17,22 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onBack, onRes
 
   const handleResetPassword = async () => {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password-confirm`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setIsEmailSent(true);
+        toast.success('Password reset email sent! Link expires in 2 minutes.');
+      }
+    } catch (error) {
+      toast.error('An error occurred while sending reset email');
+    } finally {
       setIsLoading(false);
-      setIsEmailSent(true);
-    }, 2000);
+    }
   };
 
   const handleContinue = () => {
@@ -34,8 +47,11 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onBack, onRes
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Check your email</h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-4">
             We've sent a password reset link to {email}
+          </p>
+          <p className="text-warning text-sm mb-6">
+            ⚠️ This link will expire in 2 minutes for security.
           </p>
           <Button className="w-full py-4 mb-4" onClick={handleContinue}>
             Done

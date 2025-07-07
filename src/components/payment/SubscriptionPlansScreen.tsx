@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Check, Crown, Star } from 'lucide-react';
 import { Button } from '../ui/button';
+import { VisaLogo, MpesaLogo, AirtelMoneyLogo, StripeLogo } from '../ui/payment-logos';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SubscriptionPlansScreenProps {
   onBack: () => void;
@@ -10,6 +13,31 @@ interface SubscriptionPlansScreenProps {
 
 const SubscriptionPlansScreen: React.FC<SubscriptionPlansScreenProps> = ({ onBack, onSelectPlan }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>('premium');
+  const [loading, setLoading] = useState(false);
+
+  const handleCreateCheckout = async (planId: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan_id: planId }
+      });
+
+      if (error) {
+        toast.error('Failed to create checkout session');
+        return;
+      }
+
+      if (data.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      toast.error('An error occurred while creating checkout session');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const plans = [
     {
@@ -30,7 +58,7 @@ const SubscriptionPlansScreen: React.FC<SubscriptionPlansScreenProps> = ({ onBac
     {
       id: 'premium',
       name: 'Premium',
-      price: '2,500',
+      price: '7.99',
       period: 'per month',
       description: 'Unlimited AI consultations and advanced features',
       features: [
@@ -47,7 +75,7 @@ const SubscriptionPlansScreen: React.FC<SubscriptionPlansScreenProps> = ({ onBac
     {
       id: 'family',
       name: 'Family',
-      price: '4,000',
+      price: '12.99',
       period: 'per month',
       description: 'Perfect for families with up to 6 members',
       features: [
@@ -108,7 +136,7 @@ const SubscriptionPlansScreen: React.FC<SubscriptionPlansScreenProps> = ({ onBac
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-gray-900">
-                    KSh {plan.price}
+                    ${plan.price}
                   </div>
                   <div className="text-sm text-gray-500">{plan.period}</div>
                 </div>
@@ -128,26 +156,33 @@ const SubscriptionPlansScreen: React.FC<SubscriptionPlansScreenProps> = ({ onBac
               <Button
                 variant={selectedPlan === plan.id ? "default" : "outline"}
                 className="w-full"
+                disabled={loading}
                 onClick={() => {
                   setSelectedPlan(plan.id);
                   if (plan.id !== 'free') {
-                    onSelectPlan(plan.id);
+                    handleCreateCheckout(plan.id);
                   }
                 }}
               >
-                {plan.id === 'free' ? 'Current Plan' : 'Select Plan'}
+                {loading ? 'Processing...' : (plan.id === 'free' ? 'Current Plan' : 'Select Plan')}
               </Button>
             </div>
           ))}
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-900 mb-2">Why Choose Premium?</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">Payment Methods</h3>
+          <div className="flex flex-wrap gap-3 mb-4">
+            <VisaLogo />
+            <StripeLogo />
+            <MpesaLogo />
+            <AirtelMoneyLogo />
+          </div>
           <div className="space-y-2 text-sm text-gray-600">
-            <p>• Get unlimited access to AI-powered health consultations</p>
-            <p>• Receive personalized health insights and recommendations</p>
-            <p>• Track your health journey with detailed analytics</p>
-            <p>• Connect with certified healthcare professionals</p>
+            <p>• Secure payments powered by Stripe</p>
+            <p>• Support for Visa cards and mobile money</p>
+            <p>• Cancel anytime through customer portal</p>
+            <p>• 30-day money back guarantee</p>
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 142 76% 36%; /* Health-focused green */
+    --primary: 142 76% 36%; /* Health-focused green #00B894 */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 120 40% 96.1%;
@@ -27,8 +27,8 @@ All colors MUST be HSL.
     --muted: 120 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 120 40% 96.1%;
-    --accent-foreground: 142 76% 36%;
+    --accent: 45 93% 58%; /* Soft gold accent */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -49,10 +49,13 @@ All colors MUST be HSL.
     --sidebar-ring: 142 76% 36%;
 
     /* Health-themed colors */
-    --health-green: 142 76% 36%;
+    --health-green: 142 76% 36%; /* #00B894 */
     --health-light-green: 120 60% 90%;
     --health-dark-green: 142 76% 25%;
-    --gold: 45 93% 58%;
+    --gold: 45 93% 58%; /* Soft gold */
+    --success: 120 60% 45%; /* Success green */
+    --warning: 38 92% 50%; /* Warning orange */
+    --info: 210 100% 56%; /* Info blue */
   }
 
   .dark {
