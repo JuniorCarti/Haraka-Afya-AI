@@ -29,7 +29,7 @@ verify_jwt = false
 [functions.check-subscription]
 verify_jwt = false
 
-[functions.mpesa-payment]
+[functions.mpesa-callback]
 verify_jwt = false
 
 [functions.airtel-payment]

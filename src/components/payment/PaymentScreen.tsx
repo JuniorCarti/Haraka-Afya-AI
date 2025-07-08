@@ -27,6 +27,63 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
   const [transactionId, setTransactionId] = useState<string>('');
   const { toast } = useToast();
 
+  // Poll payment status for M-Pesa/Airtel payments
+  const pollPaymentStatus = async (checkoutRequestId: string) => {
+    const maxAttempts = 30; // Poll for up to 5 minutes (30 attempts * 10 seconds)
+    let attempts = 0;
+
+    const checkStatus = async () => {
+      try {
+        const { data: payment, error } = await supabase
+          .from('payments')
+          .select('status')
+          .eq('stripe_session_id', checkoutRequestId)
+          .single();
+
+        if (!error && payment) {
+          if (payment.status === 'completed') {
+            setStep('success');
+            toast({
+              title: "Payment successful!",
+              description: "Your M-Pesa payment has been confirmed.",
+            });
+            return;
+          } else if (payment.status === 'failed') {
+            setStep('details');
+            toast({
+              title: "Payment failed",
+              description: "Your payment was not successful. Please try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(checkStatus, 10000); // Check every 10 seconds
+        } else {
+          // Timeout - show timeout message
+          setStep('details');
+          toast({
+            title: "Payment timeout",
+            description: "Payment verification timed out. Please check your M-Pesa messages or try again.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(checkStatus, 10000);
+        }
+      }
+    };
+
+    // Start polling after 5 seconds delay to allow initial processing
+    setTimeout(checkStatus, 5000);
+  };
+
   const paymentMethods = [
     { 
       id: 'visa', 
@@ -111,12 +168,27 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
       }
 
       if (paymentResult?.data?.success) {
-        setTransactionId(paymentResult.data.transactionId);
-        setStep('success');
-        toast({
-          title: "Payment successful!",
-          description: paymentResult.data.message,
-        });
+        if (paymentResult.data.status === 'pending') {
+          // For M-Pesa, show pending state and poll for completion
+          setTransactionId(paymentResult.data.checkoutRequestId || paymentResult.data.transactionId);
+          setStep('processing');
+          toast({
+            title: "Payment initiated",
+            description: paymentResult.data.message,
+          });
+          
+          // Poll for payment completion (M-Pesa specific)
+          if (selectedMethod === 'mpesa' || selectedMethod === 'airtel') {
+            pollPaymentStatus(paymentResult.data.checkoutRequestId || paymentResult.data.transactionId);
+          }
+        } else {
+          setTransactionId(paymentResult.data.transactionId);
+          setStep('success');
+          toast({
+            title: "Payment successful!",
+            description: paymentResult.data.message,
+          });
+        }
       } else {
         throw new Error(paymentResult?.data?.message || 'Payment failed');
       }
@@ -199,7 +271,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
             </div>
             <div className="bg-green-50 p-4 rounded-xl">
               <p className="text-sm text-green-800">
-                <strong>Test Mode:</strong> This is a demo payment. In production, a payment request would be sent to your phone.
+                <strong>Live M-Pesa:</strong> A payment request will be sent to your phone. Please enter your M-Pesa PIN when prompted.
               </p>
             </div>
           </div>
@@ -260,8 +332,21 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
       <div className="min-h-screen bg-gradient-to-br from-primary/5 to-gold/5 flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
           <div className="animate-spin w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full mx-auto mb-6"></div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Processing Payment...</h2>
-          <p className="text-gray-600">Please wait while we process your payment</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            {selectedMethod === 'mpesa' ? 'Waiting for M-Pesa Payment...' : 
+             selectedMethod === 'airtel' ? 'Processing Airtel Money...' : 
+             'Processing Payment...'}
+          </h2>
+          <p className="text-gray-600">
+            {selectedMethod === 'mpesa' ? 'Please check your phone and enter your M-Pesa PIN to complete the payment' :
+             selectedMethod === 'airtel' ? 'Please wait while we process your Airtel Money payment' :
+             'Please wait while we process your payment'}
+          </p>
+          {(selectedMethod === 'mpesa' || selectedMethod === 'airtel') && (
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">This may take up to 2 minutes. Please do not close this page.</p>
+            </div>
+          )}
         </div>
       </div>
     );

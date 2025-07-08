@@ -12,6 +12,100 @@ interface MpesaPaymentRequest {
   subscriptionTier: string
 }
 
+// Generate access token for Daraja API
+async function getAccessToken(): Promise<string> {
+  const consumerKey = Deno.env.get('DARAJA_CONSUMER_KEY')
+  const consumerSecret = Deno.env.get('DARAJA_CONSUMER_SECRET')
+  
+  if (!consumerKey || !consumerSecret) {
+    throw new Error('Missing Daraja API credentials')
+  }
+
+  const auth = btoa(`${consumerKey}:${consumerSecret}`)
+  
+  const response = await fetch('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${auth}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get access token')
+  }
+
+  const data = await response.json()
+  return data.access_token
+}
+
+// Generate timestamp in the format required by Daraja
+function generateTimestamp(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const seconds = String(now.getSeconds()).padStart(2, '0')
+  return `${year}${month}${day}${hours}${minutes}${seconds}`
+}
+
+// Generate password for STK Push
+function generatePassword(businessShortCode: string, passkey: string, timestamp: string): string {
+  const data = businessShortCode + passkey + timestamp
+  return btoa(data)
+}
+
+// Initiate STK Push
+async function initiateSTKPush(phoneNumber: string, amount: number, accessToken: string): Promise<any> {
+  const businessShortCode = Deno.env.get('DARAJA_BUSINESS_SHORTCODE')
+  const passkey = Deno.env.get('DARAJA_PASSKEY')
+  
+  if (!businessShortCode || !passkey) {
+    throw new Error('Missing business shortcode or passkey')
+  }
+
+  const timestamp = generateTimestamp()
+  const password = generatePassword(businessShortCode, passkey, timestamp)
+
+  // Format phone number (ensure it starts with 254)
+  let formattedPhone = phoneNumber.replace(/^\+/, '')
+  if (formattedPhone.startsWith('0')) {
+    formattedPhone = '254' + formattedPhone.substring(1)
+  } else if (!formattedPhone.startsWith('254')) {
+    formattedPhone = '254' + formattedPhone
+  }
+
+  const stkPushData = {
+    BusinessShortCode: businessShortCode,
+    Password: password,
+    Timestamp: timestamp,
+    TransactionType: "CustomerPayBillOnline",
+    Amount: amount,
+    PartyA: formattedPhone,
+    PartyB: businessShortCode,
+    PhoneNumber: formattedPhone,
+    CallBackURL: `${Deno.env.get('SUPABASE_URL')}/functions/v1/mpesa-callback`,
+    AccountReference: "HarakaAfya",
+    TransactionDesc: "Haraka Afya Subscription Payment"
+  }
+
+  const response = await fetch('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(stkPushData),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to initiate STK Push')
+  }
+
+  return await response.json()
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -28,66 +122,52 @@ Deno.serve(async (req) => {
 
     console.log(`M-Pesa payment request: ${phoneNumber}, Amount: ${amount}, User: ${userId}`)
 
-    // Simulate M-Pesa payment processing (in production, integrate with Daraja API)
-    const transactionId = `MPESA_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
-    // Simulate payment success/failure (90% success rate for demo)
-    const isSuccess = Math.random() > 0.1
-    const status = isSuccess ? 'completed' : 'failed'
+    // Get access token from Daraja API
+    const accessToken = await getAccessToken()
+    console.log('Access token obtained successfully')
 
-    // Record payment in database
-    const { error: paymentError } = await supabase
-      .from('payments')
-      .insert({
-        user_id: userId,
-        amount: amount * 100, // Store in cents
-        currency: 'KES',
-        payment_method: 'mpesa',
-        status: status,
-        stripe_session_id: transactionId
-      })
+    // Initiate STK Push
+    const stkResponse = await initiateSTKPush(phoneNumber, amount, accessToken)
+    console.log('STK Push response:', stkResponse)
 
-    if (paymentError) {
-      console.error('Payment record error:', paymentError)
-      throw new Error('Failed to record payment')
-    }
-
-    // If payment successful, update subscription
-    if (isSuccess) {
-      const subscriptionEnd = new Date()
-      subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1) // Add 1 month
-
-      const { error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .upsert({
+    // Check if STK Push was successful
+    if (stkResponse.ResponseCode === "0") {
+      const checkoutRequestId = stkResponse.CheckoutRequestID
+      
+      // Record payment as pending in database
+      const { error: paymentError } = await supabase
+        .from('payments')
+        .insert({
           user_id: userId,
-          email: '', // Will be filled by trigger or separate query
-          subscribed: true,
-          subscription_tier: subscriptionTier,
-          subscription_end: subscriptionEnd.toISOString()
+          amount: amount * 100, // Store in cents
+          currency: 'KES',
+          payment_method: 'mpesa',
+          status: 'pending',
+          stripe_session_id: checkoutRequestId
         })
 
-      if (subscriptionError) {
-        console.error('Subscription update error:', subscriptionError)
+      if (paymentError) {
+        console.error('Payment record error:', paymentError)
+        throw new Error('Failed to record payment')
       }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          checkoutRequestId,
+          message: 'STK Push sent successfully. Please check your phone and enter your M-Pesa PIN.',
+          status: 'pending'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      )
+    } else {
+      throw new Error(stkResponse.errorMessage || 'STK Push failed')
     }
 
-    return new Response(
-      JSON.stringify({
-        success: isSuccess,
-        transactionId,
-        status,
-        message: isSuccess 
-          ? `Payment of KES ${amount} successful via M-Pesa` 
-          : 'Payment failed. Please try again.'
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: isSuccess ? 200 : 400,
-      }
-    )
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('M-Pesa payment error:', error)
     return new Response(
       JSON.stringify({
