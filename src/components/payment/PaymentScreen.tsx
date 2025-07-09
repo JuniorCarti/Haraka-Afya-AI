@@ -15,14 +15,14 @@ interface PaymentScreenProps {
 
 const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
-  const [step, setStep] = useState<'select' | 'details' | 'processing' | 'success'>('select');
+  const [step, setStep] = useState<'method' | 'details' | 'processing' | 'success'>('method');
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '',
     expiryDate: '',
     cvv: '',
     name: '',
     phoneNumber: '',
-    amount: selectedPlan?.price?.toString() || '2500'
+    amount: selectedPlan?.price?.toString() || '799'
   });
   const [transactionId, setTransactionId] = useState<string>('');
   const { toast } = useToast();
@@ -114,6 +114,14 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
   const handlePaymentSelect = (methodId: string) => {
     setSelectedMethod(methodId);
     setStep('details');
+  };
+
+  const handleMethodBack = () => {
+    if (step === 'method') {
+      onBack();
+    } else {
+      setStep('method');
+    }
   };
 
   const handlePayment = async () => {
@@ -312,7 +320,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Payment Successful!</h2>
           <p className="text-gray-600 mb-4">
-            Your payment of KSh {paymentDetails.amount} has been processed successfully.
+            Your payment of {selectedPlan?.price === 0 ? 'Free' : `$${((selectedPlan?.price || 0) / 100).toFixed(2)}`} has been processed successfully.
           </p>
           {transactionId && (
             <p className="text-sm text-gray-500 mb-8">
@@ -356,28 +364,35 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-gold/5">
       <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-100 p-4">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={step === 'select' ? onBack : () => setStep('select')}>
+          <Button variant="ghost" size="sm" onClick={handleMethodBack}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-lg font-semibold text-gray-900">
-            {step === 'select' ? 'Payment Method' : 'Payment Details'}
+            {step === 'method' ? 'Payment Method' : 'Payment Details'}
           </h1>
           <div></div>
         </div>
       </div>
 
       <div className="p-6">
-        {step === 'select' ? (
+        {step === 'method' ? (
           <div className="space-y-4">
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Choose Payment Method</h2>
               <p className="text-gray-600 mb-6">Select your preferred payment option</p>
-              <div className="bg-primary/5 rounded-xl p-4 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Amount to Pay:</span>
-                  <span className="text-2xl font-bold text-primary">KSh {paymentDetails.amount}</span>
+              {selectedPlan && (
+                <div className="bg-primary/5 rounded-xl p-4 mb-6">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-gray-600">Selected Plan:</span>
+                      <div className="font-semibold text-primary">{selectedPlan.name}</div>
+                    </div>
+                    <span className="text-2xl font-bold text-primary">
+                      {selectedPlan.price === 0 ? 'Free' : `$${(selectedPlan.price / 100).toFixed(2)}`}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -393,7 +408,6 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
                       alt={method.name}
                       className="max-w-12 max-h-8 object-contain"
                       onError={(e) => {
-                        // Fallback to text if image fails to load
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         target.nextElementSibling!.textContent = method.name.charAt(0);
@@ -404,10 +418,10 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
                   <div className="flex-1 text-left">
                     <h3 className="font-semibold text-gray-900">{method.name}</h3>
                     <p className="text-sm text-gray-500">
-                      {method.id === 'mpesa' && 'Pay with M-Pesa'}
+                      {method.id === 'mpesa' && 'Pay with M-Pesa mobile money'}
                       {method.id === 'airtel' && 'Pay with Airtel Money'}
                       {method.id === 'visa' && 'Pay with Visa Card'}
-                      {method.id === 'stripe' && 'Pay with Stripe'}
+                      {method.id === 'stripe' && 'Pay with Credit/Debit Card'}
                     </p>
                   </div>
                 </button>
@@ -420,7 +434,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ onBack, selectedPlan }) =
             {renderPaymentForm()}
             <div className="mt-8">
               <Button onClick={handlePayment} className="w-full py-4">
-                Pay KSh {paymentDetails.amount}
+                Pay {selectedPlan?.price === 0 ? 'Free' : `$${((selectedPlan?.price || 0) / 100).toFixed(2)}`}
               </Button>
             </div>
           </div>

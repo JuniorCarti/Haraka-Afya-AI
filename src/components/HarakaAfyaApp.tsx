@@ -46,6 +46,12 @@ type AppScreen =
   | 'help'
   | 'security-settings';
 
+interface SelectedPlan {
+  id: string;
+  name: string;
+  price: number;
+}
+
 interface User {
   id: string;
   firstName: string;
@@ -64,6 +70,7 @@ const HarakaAfyaApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [showEmergencyServices, setShowEmergencyServices] = useState(false);
   const [showWhatsAppChat, setShowWhatsAppChat] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | undefined>();
 
   // Auth state management
   useEffect(() => {
@@ -198,6 +205,13 @@ const HarakaAfyaApp: React.FC = () => {
   };
 
   const handleSelectPlan = (planId: string) => {
+    // Store selected plan data
+    const plans = {
+      'free': { id: 'free', name: 'Free', price: 0 },
+      'premium': { id: 'premium', name: 'Premium', price: 799 },
+      'family': { id: 'family', name: 'Family', price: 1299 }
+    };
+    setSelectedPlan(plans[planId as keyof typeof plans]);
     setCurrentScreen('payment');
   };
 
@@ -285,7 +299,12 @@ const HarakaAfyaApp: React.FC = () => {
         return <HealthCommunity onBack={handleBackToHome} />;
       
       case 'payment':
-        return <PaymentScreen onBack={handleBackToHome} />;
+        return (
+          <PaymentScreen 
+            onBack={handleBackToHome} 
+            selectedPlan={selectedPlan}
+          />
+        );
       
       case 'subscription':
         return (
