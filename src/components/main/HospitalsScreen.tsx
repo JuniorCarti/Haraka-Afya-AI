@@ -1,185 +1,131 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Phone, Star, Clock, Users, Stethoscope, Search, Filter, ChevronRight, Shield, Zap, Award, Heart, UserCheck, Calendar, Map, List } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Star, Clock, Stethoscope, Search, Filter, ChevronRight, Shield, Award, Heart, Calendar, Bot, MessageCircle, X, Activity, Zap, Users } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import FacilityChecker from '../hospitals/FacilityChecker';
 import DoctorBookingModal from '../hospitals/DoctorBookingModal';
-import HospitalMap from '../map/HospitalMap';
 
 interface HospitalsScreenProps {
   onNavigate: (screen: string) => void;
 }
 
 const HospitalsScreen: React.FC<HospitalsScreenProps> = ({ onNavigate }) => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCancerType, setSelectedCancerType] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFacility, setSelectedFacility] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'list' | 'map'>('list');
+  const [showAiAssistant, setShowAiAssistant] = useState(false);
 
-  const categories = ['All', 'General', 'Maternity', 'Dental', 'Eye Care', 'ENT', 'Pediatric'];
+  const cancerTypes = ['All', 'Breast Cancer', 'Prostate Cancer', 'Lung Cancer', 'Colorectal Cancer', 'Cervical Cancer', 'Leukemia'];
 
-  const facilities = [
+  const cancerFacilities = [
     {
       id: '1',
-      name: 'Kenyatta National Hospital',
-      category: 'General',
+      name: 'Kenyatta National Hospital Cancer Center',
       location: 'Nairobi',
       distance: '2.5 km',
-      rating: 4.5,
+      rating: 4.8,
       reviews: 1250,
-      isEmergency: true,
-      isInsurance: true,
-      waitTime: '15 min',
-      equipmentStatus: {
-        xray: '✅ Functional',
-        ctScan: '✅ Functional',
-        mri: '✅ Functional',
-        ventilator: '✅ Functional',
-        ecg: '✅ Functional'
-      }
+      description: 'Comprehensive cancer care specializing in all types of cancer with state-of-the-art treatment facilities.',
+      cancerTypes: ['Breast Cancer', 'Lung Cancer', 'Prostate Cancer', 'Colorectal Cancer', 'Leukemia'],
+      doctors: [
+        { name: 'Dr. Sarah Wanjiku', specialty: 'Medical Oncologist', experience: '15 years' },
+        { name: 'Dr. James Kimani', specialty: 'Radiation Oncologist', experience: '12 years' },
+        { name: 'Dr. Grace Muthoni', specialty: 'Surgical Oncologist', experience: '18 years' }
+      ],
+      equipment: ['Linear Accelerator', 'CT Simulator', 'PET/CT Scanner', 'MRI Machine', 'Chemotherapy Suite', 'Brachytherapy Unit']
     },
     {
       id: '2',
-      name: 'Aga Khan University Hospital',
-      category: 'General',
+      name: 'Aga Khan University Hospital Oncology Unit',
       location: 'Nairobi',
       distance: '3.1 km',
-      rating: 4.7,
+      rating: 4.9,
       reviews: 890,
-      isEmergency: true,
-      isInsurance: true,
-      waitTime: '10 min',
-      equipmentStatus: {
-        xray: '✅ Functional',
-        ctScan: '✅ Functional',
-        mri: '✅ Functional',
-        ventilator: '✅ Functional',
-        ecg: '✅ Functional'
-      }
+      description: 'Advanced oncology unit offering personalized cancer treatment with international standard protocols.',
+      cancerTypes: ['Breast Cancer', 'Prostate Cancer', 'Lung Cancer', 'Cervical Cancer'],
+      doctors: [
+        { name: 'Dr. Fatima Hassan', specialty: 'Medical Oncologist', experience: '14 years' },
+        { name: 'Dr. Ahmed Ali', specialty: 'Hematologist-Oncologist', experience: '16 years' },
+        { name: 'Dr. Priya Sharma', specialty: 'Gynecologic Oncologist', experience: '11 years' }
+      ],
+      equipment: ['TrueBeam STx', 'PET/CT Scanner', 'Da Vinci Surgical Robot', 'Mammography Unit', 'Bone Marrow Transplant Unit']
     },
     {
       id: '3',
-      name: 'Nairobi Hospital',
-      category: 'General',
+      name: 'The Nairobi Hospital Cancer Treatment Centre',
       location: 'Nairobi',
       distance: '1.8 km',
-      rating: 4.6,
+      rating: 4.7,
       reviews: 2100,
-      isEmergency: true,
-      isInsurance: true,
-      waitTime: '20 min',
-      equipmentStatus: {
-        xray: '✅ Functional',
-        ctScan: '✅ Functional',
-        mri: '✅ Functional',
-        ventilator: '✅ Functional',
-        ecg: '✅ Functional'
-      }
+      description: 'Leading private cancer center with multidisciplinary approach and latest treatment technologies.',
+      cancerTypes: ['Breast Cancer', 'Prostate Cancer', 'Colorectal Cancer', 'Lung Cancer'],
+      doctors: [
+        { name: 'Dr. Michael Otieno', specialty: 'Radiation Oncologist', experience: '20 years' },
+        { name: 'Dr. Catherine Njoroge', specialty: 'Medical Oncologist', experience: '13 years' },
+        { name: 'Dr. David Kiprotich', specialty: 'Urologic Oncologist', experience: '17 years' }
+      ],
+      equipment: ['Elekta Versa HD', 'MRI Scanner', 'CT Scanner', 'Mammography', 'Nuclear Medicine Unit', 'Immunotherapy Center']
     },
     {
       id: '4',
-      name: 'Mater Misericordiae Hospital',
-      category: 'General',
+      name: 'Mater Misericordiae Hospital Oncology Wing',
       location: 'Nairobi',
       distance: '4.2 km',
-      rating: 4.4,
+      rating: 4.6,
       reviews: 780,
-      isEmergency: true,
-      isInsurance: false,
-      waitTime: '25 min',
-      equipmentStatus: {
-        xray: '✅ Functional',
-        ctScan: '✅ Functional',
-        mri: '🔧 Maintenance (Est. Repair: 3 days)',
-        ventilator: '✅ Functional',
-        ecg: '✅ Functional'
-      }
+      description: 'Specialized cancer care with focus on patient comfort and comprehensive support services.',
+      cancerTypes: ['Breast Cancer', 'Cervical Cancer', 'Colorectal Cancer'],
+      doctors: [
+        { name: 'Dr. Mary Wambui', specialty: 'Gynecologic Oncologist', experience: '19 years' },
+        { name: 'Dr. Peter Macharia', specialty: 'Medical Oncologist', experience: '10 years' }
+      ],
+      equipment: ['Linear Accelerator', 'CT Scanner', 'Ultrasound Machines', 'Chemotherapy Suites', 'Palliative Care Unit']
     },
     {
       id: '5',
-      name: 'Pumwani Maternity Hospital',
-      category: 'Maternity',
+      name: 'Texas Cancer Center - Nairobi',
       location: 'Nairobi',
-      distance: '3.7 km',
-      rating: 4.2,
-      reviews: 650,
-      isEmergency: true,
-      isInsurance: true,
-      waitTime: '30 min',
-      equipmentStatus: {
-        xray: '✅ Functional',
-        ctScan: '❌ Broken (Alternative: Kenyatta Hospital)',
-        mri: 'Not Available',
-        ventilator: '✅ Functional',
-        ecg: '✅ Functional'
-      }
-    }
-  ];
-
-  const doctors = [
-    {
-      id: '1',
-      name: 'Dr. Sarah Wanjiku',
-      specialty: 'Oncologist (Cancer Specialist)',
-      hospital: 'Kenyatta National Hospital',
+      distance: '5.1 km',
       rating: 4.8,
-      reviews: 156,
-      availability: 'Available Today 2:00 PM - 6:00 PM',
-      experience: '15 years',
-      price: 'KSh 3,500',
-      conditions: ['Lung Cancer', 'Breast Cancer', 'Prostate Cancer']
-    },
-    {
-      id: '2',
-      name: 'Dr. James Mwangi',
-      specialty: 'Cardiologist',
-      hospital: 'Nairobi Hospital',
-      rating: 4.9,
-      reviews: 203,
-      availability: 'Available Tomorrow 9:00 AM - 1:00 PM',
-      experience: '12 years',
-      price: 'KSh 4,000',
-      conditions: ['Heart Disease', 'Hypertension', 'Arrhythmia']
-    },
-    {
-      id: '3',
-      name: 'Dr. Grace Kiprotich',
-      specialty: 'Pulmonologist',
-      hospital: 'Aga Khan Hospital',
-      rating: 4.7,
-      reviews: 98,
-      availability: 'Available Today 3:00 PM - 5:00 PM',
-      experience: '10 years',
-      price: 'KSh 3,200',
-      conditions: ['Lung Cancer', 'Asthma', 'COPD', 'Tuberculosis']
+      reviews: 650,
+      description: 'International standard cancer center with cutting-edge technology and world-class specialists.',
+      cancerTypes: ['Breast Cancer', 'Lung Cancer', 'Prostate Cancer', 'Leukemia', 'Colorectal Cancer'],
+      doctors: [
+        { name: 'Dr. Robert Johnson', specialty: 'Hematologist-Oncologist', experience: '22 years' },
+        { name: 'Dr. Elizabeth Kamau', specialty: 'Radiation Oncologist', experience: '15 years' },
+        { name: 'Dr. Simon Mutua', specialty: 'Surgical Oncologist', experience: '14 years' }
+      ],
+      equipment: ['CyberKnife', 'TrueBeam', 'PET/CT Scanner', 'MRI', 'Immunotherapy Lab', 'Genetic Testing Lab']
     }
   ];
 
-  const filteredFacilities = selectedCategory === 'All'
-    ? facilities.filter(facility => facility.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : facilities.filter(facility => 
-        facility.category === selectedCategory && 
-        facility.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFacilities = selectedCancerType === 'All'
+    ? cancerFacilities.filter(facility => 
+        facility.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        facility.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : cancerFacilities.filter(facility => 
+        facility.cancerTypes.includes(selectedCancerType) && 
+        (facility.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         facility.description.toLowerCase().includes(searchQuery.toLowerCase()))
       );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-  };
-
   const handleFacilitySelect = (facility: any) => {
     setSelectedFacility(facility);
   };
 
-  const handleBookDoctor = (doctor: any) => {
-    setSelectedDoctor(doctor);
+  const handleBookDoctor = (doctor: any, facility: any) => {
+    setSelectedDoctor({ ...doctor, facility: facility.name });
     setShowBookingModal(true);
   };
 
@@ -193,276 +139,224 @@ const HospitalsScreen: React.FC<HospitalsScreenProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
-      {/* Modern Header */}
+      {/* Header */}
       <div className="bg-card/95 backdrop-blur-xl border-b border-border/50 sticky top-0 z-30">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <Button variant="ghost" size="sm" onClick={() => onNavigate('home')} className="hover:bg-muted/50">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="text-center">
-              <h1 className="text-xl font-bold text-foreground">Healthcare Facilities</h1>
-              <p className="text-sm text-muted-foreground">Find quality care near you</p>
+              <h1 className="text-2xl font-bold text-foreground">Browse Cancer Facilities Near You</h1>
+              <p className="text-sm text-muted-foreground">Comprehensive cancer care and treatment centers</p>
             </div>
             <div className="w-10"></div>
-          </div>
-          
-          {/* Sleek Tab Navigation */}
-          <div className="flex bg-muted/50 rounded-2xl p-1.5">
-            <button
-              onClick={() => setActiveTab('list')}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
-                activeTab === 'list'
-                  ? 'bg-card text-primary shadow-lg shadow-primary/10'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <List className="w-4 h-4" />
-              List View
-            </button>
-            <button
-              onClick={() => setActiveTab('map')}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
-                activeTab === 'map'
-                  ? 'bg-card text-primary shadow-lg shadow-primary/10'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Map className="w-4 h-4" />
-              Map View
-            </button>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6 space-y-8">
-        {activeTab === 'map' ? (
-          <div className="animate-fade-in">
-            <HospitalMap />
+        {/* Search and Filter Section */}
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input 
+              type="text" 
+              placeholder="Search cancer facilities, doctors, treatments..." 
+              className="pl-12 pr-12 h-12 bg-card/50 border-border/50 rounded-2xl text-base focus:bg-card transition-colors"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
           </div>
-        ) : (
-          <div className="space-y-8 animate-fade-in">
-            {/* Enhanced Search and Filter */}
-            <div className="space-y-4">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input 
-                  type="text" 
-                  placeholder="Search hospitals, clinics, doctors..." 
-                  className="pl-12 pr-12 h-12 bg-card/50 border-border/50 rounded-2xl text-base focus:bg-card transition-colors"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-                <Button size="sm" variant="ghost" className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <Filter className="w-4 h-4" />
-                </Button>
-              </div>
 
-              <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryChange(category)}
-                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 hover:scale-105 ${
-                      selectedCategory === category
-                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
-                        : 'bg-card text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-border/50'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+          {/* Cancer Type Filter */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground">Filter by Cancer Type</h3>
+            <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide">
+              {cancerTypes.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedCancerType(type)}
+                  className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 hover:scale-105 ${
+                    selectedCancerType === type
+                      ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                      : 'bg-card text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-border/50'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
             </div>
+          </div>
+        </div>
 
-            {/* Premium Emergency Card */}
-            <Card className="bg-gradient-to-r from-destructive/10 to-destructive/5 border-destructive/20 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-14 h-14 bg-destructive/10 rounded-2xl flex items-center justify-center">
-                    <Heart className="w-7 h-7 text-destructive animate-pulse" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-destructive">Emergency Services</h3>
-                    <p className="text-muted-foreground">24/7 immediate medical assistance</p>
-                  </div>
-                  <Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl px-6">
-                    Call 911
+        {/* AI Assistant Card */}
+        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 hover:shadow-lg transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center">
+                <Bot className="w-7 h-7 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-lg text-primary">AI Cancer Assistant</h3>
+                <p className="text-muted-foreground">Not sure about your cancer type? Get personalized guidance and information</p>
+              </div>
+              <Dialog open={showAiAssistant} onOpenChange={setShowAiAssistant}>
+                <DialogTrigger asChild>
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Get Help
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Top Specialist Doctors */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">Top Specialists</h2>
-                  <p className="text-muted-foreground">Book appointments with verified doctors</p>
-                </div>
-                <Button variant="ghost" className="text-primary hover:bg-primary/10">
-                  View All
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </div>
-              
-              <div className="grid gap-4">
-                {doctors.map((doctor) => (
-                  <Card key={doctor.id} className="hover:shadow-xl transition-all duration-300 hover:scale-[1.02] bg-gradient-to-br from-card to-card/50 border-border/50">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
-                          <Stethoscope className="w-8 h-8 text-primary" />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-bold text-lg text-foreground truncate">{doctor.name}</h3>
-                              <p className="text-primary font-medium">{doctor.specialty}</p>
-                              <p className="text-sm text-muted-foreground">{doctor.hospital}</p>
-                            </div>
-                            <div className="text-right flex-shrink-0">
-                              <div className="flex items-center space-x-1 mb-1">
-                                <Star className="w-4 h-4 text-amber-400 fill-current" />
-                                <span className="font-bold text-foreground">{doctor.rating}</span>
-                                <span className="text-sm text-muted-foreground">({doctor.reviews})</span>
-                              </div>
-                              <p className="text-sm font-medium text-primary">{doctor.price}</p>
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-3">
-                            <div className="flex items-center space-x-2">
-                              <Clock className="w-4 h-4 text-emerald-600" />
-                              <span className="text-sm text-emerald-600 font-medium">{doctor.availability}</span>
-                            </div>
-                            
-                            <div className="flex flex-wrap gap-2">
-                              {doctor.conditions.slice(0, 3).map((condition, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
-                                  {condition}
-                                </Badge>
-                              ))}
-                              {doctor.conditions.length > 3 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{doctor.conditions.length - 3} more
-                                </Badge>
-                              )}
-                            </div>
-                            
-                            <div className="flex space-x-2 pt-2">
-                              <Button 
-                                className="flex-1 bg-primary hover:bg-primary/90 rounded-xl"
-                                onClick={() => handleBookDoctor(doctor)}
-                              >
-                                <Calendar className="w-4 h-4 mr-2" />
-                                Book Now
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                className="px-4 rounded-xl border-border/50 hover:bg-muted/50"
-                                onClick={() => window.open(`tel:+254700000000`, '_self')}
-                              >
-                                <Phone className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Bot className="w-5 h-5 text-primary" />
+                      AI Cancer Assistant
+                    </DialogTitle>
+                    <DialogDescription>
+                      I can help you understand different cancer types and find appropriate facilities.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-2">Common questions I can help with:</p>
+                      <ul className="text-sm space-y-1">
+                        <li>• What are the symptoms of different cancer types?</li>
+                        <li>• Which screening tests do I need?</li>
+                        <li>• What treatment options are available?</li>
+                        <li>• How to prepare for cancer treatment?</li>
+                      </ul>
+                    </div>
+                    <Button className="w-full" onClick={() => setShowAiAssistant(false)}>
+                      Start Conversation
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Enhanced Hospitals Grid */}
+        {/* Cancer Facilities List */}
+        <div>
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">Nearby Hospitals</h2>
-                  <p className="text-muted-foreground">Quality healthcare facilities in your area</p>
-                </div>
-                <Button variant="ghost" className="text-primary hover:bg-primary/10">
-                  View All
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </div>
-              
-              <div className="grid gap-4">
-                {filteredFacilities.map((facility) => (
-                  <Card 
-                    key={facility.id} 
-                    className="hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer bg-gradient-to-br from-card to-card/50 border-border/50"
-                    onClick={() => handleFacilitySelect(facility)}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex space-x-4">
-                        <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-2xl flex-shrink-0 flex items-center justify-center">
-                          <Shield className="w-8 h-8 text-primary" />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between mb-3">
-                            <div>
-                              <h3 className="font-bold text-lg text-foreground hover:text-primary transition-colors truncate">
-                                {facility.name}
-                              </h3>
-                              <div className="flex items-center space-x-2 mt-1">
-                                <MapPin className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-muted-foreground text-sm">{facility.location}</span>
-                                <span className="text-primary text-sm font-medium">• {facility.distance}</span>
-                              </div>
-                            </div>
-                            
-                            <div className="text-right flex-shrink-0">
-                              <div className="flex items-center space-x-1">
-                                <Star className="w-4 h-4 text-amber-400 fill-current" />
-                                <span className="font-bold text-foreground">{facility.rating}</span>
-                                <span className="text-sm text-muted-foreground">({facility.reviews})</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center space-x-4 mb-3">
-                            {facility.isEmergency && (
-                              <Badge className="bg-destructive/10 text-destructive hover:bg-destructive/20">
-                                <Zap className="w-3 h-3 mr-1" />
-                                Emergency
-                              </Badge>
-                            )}
-                            {facility.isInsurance && (
-                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200">
-                                <Shield className="w-3 h-3 mr-1" />
-                                Insurance
-                              </Badge>
-                            )}
-                            <Badge variant="outline" className="border-border/50">
-                              <Clock className="w-3 h-3 mr-1" />
-                              {facility.waitTime} wait
-                            </Badge>
-                          </div>
-                          
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center space-x-2 text-muted-foreground">
-                              <Users className="w-4 h-4" />
-                              <span>24/7 Available</span>
-                            </div>
-                            <div className="flex items-center space-x-1 text-primary hover:text-primary/80 transition-colors">
-                              <span className="font-medium">View Details</span>
-                              <ChevronRight className="w-4 h-4" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <h2 className="text-2xl font-bold text-foreground">Cancer Treatment Centers</h2>
+              <p className="text-muted-foreground">{filteredFacilities.length} facilities found</p>
             </div>
           </div>
-        )}
+          
+          <div className="grid gap-6">
+            {filteredFacilities.map((facility) => (
+              <Card 
+                key={facility.id} 
+                className="hover:shadow-xl transition-all duration-300 hover:scale-[1.01] cursor-pointer bg-gradient-to-br from-card to-card/50 border-border/50"
+                onClick={() => handleFacilitySelect(facility)}
+              >
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {/* Facility Header */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-xl text-foreground hover:text-primary transition-colors mb-2">
+                          {facility.name}
+                        </h3>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground text-sm">{facility.location}</span>
+                          <span className="text-primary text-sm font-medium">• {facility.distance}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {facility.description}
+                        </p>
+                      </div>
+                      <div className="text-right flex-shrink-0 ml-4">
+                        <div className="flex items-center space-x-1 mb-2">
+                          <Star className="w-4 h-4 text-amber-400 fill-current" />
+                          <span className="font-bold text-foreground">{facility.rating}</span>
+                          <span className="text-sm text-muted-foreground">({facility.reviews})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cancer Types */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2">Cancer Types Treated:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {facility.cancerTypes.map((type, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary hover:bg-primary/20">
+                            {type}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Specialist Doctors */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-3">Specialist Doctors:</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {facility.doctors.map((doctor, index) => (
+                          <div key={index} className="bg-muted/30 rounded-lg p-3 hover:bg-muted/50 transition-colors">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className="font-medium text-sm text-foreground">{doctor.name}</p>
+                                <p className="text-xs text-primary">{doctor.specialty}</p>
+                                <p className="text-xs text-muted-foreground">{doctor.experience} experience</p>
+                              </div>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="text-xs h-6 px-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleBookDoctor(doctor, facility);
+                                }}
+                              >
+                                Book
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Equipment & Technology */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2">Available Equipment & Technology:</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {facility.equipment.map((equipment, index) => (
+                          <div key={index} className="flex items-center space-x-2 text-xs">
+                            <Activity className="w-3 h-3 text-emerald-600" />
+                            <span className="text-muted-foreground">{equipment}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                      <div className="flex items-center space-x-4">
+                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200">
+                          <Shield className="w-3 h-3 mr-1" />
+                          Certified
+                        </Badge>
+                        <div className="flex items-center space-x-1 text-muted-foreground text-sm">
+                          <Phone className="w-4 h-4" />
+                          <span>24/7 Support</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1 text-primary hover:text-primary/80 transition-colors">
+                        <span className="font-medium text-sm">View Full Details</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Doctor Booking Modal */}
